@@ -4,9 +4,9 @@
   "author": "Safarte",
   "name": "Docking Alignement Display",
   "description": "a",
-  "source": "a",
+  "source": "https://github.com/Safarte/DockingAlignmentDisplay",
   "version": "0.1.0",
-  "version_check": "a",
+  "version_check": "https://raw.githubusercontent.com/Safarte/DockingAlignmentDisplay/main/docking_alignment_display/swinfo.json",
   "ksp2_version": {
     "min": "0.1.3",
     "max": "*"

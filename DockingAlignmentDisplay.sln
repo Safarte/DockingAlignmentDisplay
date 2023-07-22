@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockingAlignmentDisplay", "src\DockingAlignmentDisplay\DockingAlignmentDisplay.csproj", "{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Deploy|Any CPU = Deploy|Any CPU
+		DeployAndRun|Any CPU = DeployAndRun|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
+		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.DeployAndRun|Any CPU.ActiveCfg = DeployAndRun|Any CPU
+		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.DeployAndRun|Any CPU.Build.0 = DeployAndRun|Any CPU
+		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

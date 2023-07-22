@@ -12,5 +12,6 @@
         <PackageReference Include="SpaceWarp" Version="1.4.0" />
         <PackageReference Include="UitkForKsp2" Version="1.4.0" />
         <PackageReference Include="UnityEngine.Modules" Version="2020.3.33.1" />
+        <PackageReference Include="UnityEngine.UITK" Version="2020.3.33.1" />
     </ItemGroup>
 </Project>

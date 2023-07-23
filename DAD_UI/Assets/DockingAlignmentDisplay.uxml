@@ -1,6 +1,12 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement>
-        <ui:Label text="blblblbl" display-tooltip-when-elided="true" />
-        <ui:Button text="a" display-tooltip-when-elided="true" />
+    <Style src="DockingAlignmentDisplay.uss" />
+    <ui:VisualElement name="root" class="root" style="flex-direction: row; align-items: flex-start; justify-content: center; flex-wrap: wrap;">
+        <ui:Label text="DOCKING-ALIGNMENT" display-tooltip-when-elided="true" name="title" class="title" style="top: -1px;" />
+        <ui:Button display-tooltip-when-elided="true" text="×" name="close-button" enable-rich-text="true" class="close-button" />
+        <ui:VisualElement name="screen" class="screen" />
+        <ui:VisualElement name="rel-info" style="align-items: auto; flex-wrap: nowrap; flex-direction: row; justify-content: space-between; width: 100%;">
+            <ui:Label text="RDST:" display-tooltip-when-elided="true" name="rdst" class="rel-text" />
+            <ui:Label text="RVEL:" display-tooltip-when-elided="true" name="rvel" class="rel-text" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

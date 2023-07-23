@@ -39,7 +39,7 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
     [PublicAPI] public const string ModVer = MyPluginInfo.PLUGIN_VERSION;
 
     public static bool InterfaceEnabled = false;
-    public const string _ToolbarFlightButtonID = "BTN-DockingAlignmentDisplayFlight";
+    public const string ToolbarFlightButtonID = "BTN-DockingAlignmentDisplayFlight";
 
     DadUiController uiController;
 
@@ -58,16 +58,25 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
         var dadWindow = Window.CreateFromUxml(dadUxml, "Docking Alignment Display Main Window", transform, true);
         uiController = dadWindow.gameObject.AddComponent<DadUiController>();
 
-        Appbar.RegisterAppButton("Docking Alignment Display", _ToolbarFlightButtonID, AssetManager.GetAsset<Texture2D>($"{Info.Metadata.GUID}/images/icon.png"),
-        ToggleButton);
+        // Add AppBar button
+        Appbar.RegisterAppButton(
+            "Docking Alignment",
+            ToolbarFlightButtonID,
+            AssetManager.GetAsset<Texture2D>($"{Info.Metadata.GUID}/images/icon.png"),
+            ToggleButton
+        );
 
         Instance = this;
     }
 
+    /// <summary>
+    /// Callback for the mod's app bar button
+    /// </summary>
+    /// <param name="toggle"></param>
     public void ToggleButton(bool toggle)
     {
         InterfaceEnabled = toggle;
-        GameObject.Find(_ToolbarFlightButtonID)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(InterfaceEnabled);
+        GameObject.Find(ToolbarFlightButtonID)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(InterfaceEnabled);
         uiController.SetEnabled(toggle);
     }
 }

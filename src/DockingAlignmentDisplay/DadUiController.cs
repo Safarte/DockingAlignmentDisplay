@@ -30,6 +30,10 @@ internal class DadUiController : KerbalMonoBehaviour
     Label RDstLabel;
     Label RVelLabel;
 
+    // Error crosshairs
+    VisualElement TangentCrosshair;
+    VisualElement AngleCrosshair;
+
     private void Start()
     {
         SetupDocument();
@@ -54,6 +58,32 @@ internal class DadUiController : KerbalMonoBehaviour
         {
             s_container.style.display = DisplayStyle.None;
             return;
+        }
+
+        // Update RDIST & RVEL
+        PatchedConicsOrbit targetOrbit = _currentTarget?.Orbit as PatchedConicsOrbit;
+
+        if (_currentTarget != null)
+        {
+            if (_currentTarget.IsPart)
+            {
+                targetOrbit = _currentTarget?.Part.PartOwner.SimulationObject.Orbit as PatchedConicsOrbit;
+            }
+
+            if (targetOrbit != null)
+            {
+                var relDist = (_activeVessel.Orbit.Position - targetOrbit.Position).magnitude;
+                var relSpeed = (_activeVessel.Orbit.relativeVelocity - targetOrbit.relativeVelocity).magnitude;
+
+                if (_activeVessel.Orbit.referenceBody == targetOrbit.referenceBody)
+                {
+                    RDstLabel.text = $"RDST: {toDisplay(relDist)}m";
+                    RVelLabel.text = $"RVEL: {toDisplay(relSpeed)}m/s";
+
+                    TangentCrosshair.transform.position = new Vector3(-20, -20, 0);
+                    AngleCrosshair.transform.position = new Vector3(20, 10, 0);
+                }
+            }
         }
     }
 
@@ -104,6 +134,18 @@ internal class DadUiController : KerbalMonoBehaviour
         RDstLabel = s_container.Q<Label>("rdst");
         RVelLabel = s_container.Q<Label>("rvel");
 
+        // Error crosshairs
+        TangentCrosshair = s_container.Q<VisualElement>("tangent-cross");
+        AngleCrosshair = s_container.Q<VisualElement>("angle-cross");
+
+        // Rotate Angle crosshair
+        AngleCrosshair.transform.rotation = Quaternion.AngleAxis(45, Vector3.forward);
+
         _initialized = true;
+    }
+
+    private string toDisplay(double value)
+    {
+        return $"{value,5:F1} ";
     }
 }

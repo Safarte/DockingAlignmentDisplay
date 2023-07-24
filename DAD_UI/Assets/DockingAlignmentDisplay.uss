@@ -29,6 +29,8 @@
     padding-top: 1px;
     padding-bottom: 1px;
     -unity-text-align: middle-left;
+    top: -1px;
+    color: rgb(192, 199, 213);
 }
 
 .close-button {
@@ -82,8 +84,8 @@
     border-right-color: rgb(67, 70, 81);
     border-top-color: rgb(67, 70, 81);
     border-bottom-color: rgb(67, 70, 81);
-    border-left-width: 0;
-    border-right-width: 0;
+    border-left-width: 1px;
+    border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
     margin-top: 5%;
@@ -92,6 +94,8 @@
     border-top-right-radius: 1px;
     border-bottom-right-radius: 1px;
     margin-bottom: 5px;
+    align-items: center;
+    justify-content: center;
 }
 
 .rel-info {
@@ -104,4 +108,73 @@
     padding-right: 0;
     padding-bottom: 0;
     width: 45%;
+}
+
+.crosshair-vertical {
+    width: 1px;
+    height: 100%;
+    background-color: rgb(67, 70, 81);
+}
+
+.crosshair-horizontal {
+    background-color: rgb(67, 70, 81);
+    width: 100%;
+    height: 1px;
+}
+
+.crosshair-circle {
+    border-left-color: rgb(67, 70, 81);
+    border-right-color: rgb(67, 70, 81);
+    border-top-color: rgb(67, 70, 81);
+    border-bottom-color: rgb(67, 70, 81);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+}
+
+.tangent-text {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    -unity-font-definition: url('/Packages/uitkforksp2.controls/Assets/Theme/Fonts/LEDCounter7/led_counter-7 SDF.asset');
+    font-size: 10px;
+    color: rgb(0, 255, 102);
+}
+
+.angle-text {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    -unity-font-definition: url('/Packages/uitkforksp2.controls/Assets/Theme/Fonts/LEDCounter7/led_counter-7 SDF.asset');
+    color: rgb(192, 199, 213);
+    font-size: 10px;
+}
+
+.error-cross {
+    width: 25%;
+    height: 25%;
+    position: absolute;
+}
+
+.cross-vert {
+    width: 1px;
+    height: 100%;
+    position: absolute;
+    left: 50%;
+    background-color: rgb(0, 255, 102);
+}
+
+.cross-hori {
+    width: 100%;
+    height: 1px;
+    position: absolute;
+    top: 50%;
+    background-color: rgb(0, 255, 102);
 }

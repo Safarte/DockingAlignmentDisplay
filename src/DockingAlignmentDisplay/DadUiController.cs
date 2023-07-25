@@ -1,4 +1,11 @@
-﻿using KSP.Game;
+﻿/* Docking Alignement Display
+ * Copyright (C) 2023  Safarte
+ *
+ * Use of this source code is governed by an MIT-style
+ * license that can be found in the LICENSE file or at
+ * https://opensource.org/licenses/MIT.
+ */
+using KSP.Game;
 using KSP.Sim.impl;
 using KSP.UI.Binding;
 using UitkForKsp2.API;
@@ -26,13 +33,27 @@ internal class DadUiController : KerbalMonoBehaviour
     // Close Button
     Button CloseButton;
 
-    // Relative Distance & Velocity Labels
-    Label RDstLabel;
-    Label RVelLabel;
+    // Closing Distance
+    Label CdstLabel;
+    // Closing Velocity
+    Label CvelLabel;
+    // Tangent Offset
+    Label TofsLabel;
+    // Tangent Velocity
+    Label TvelLabel;
+
+    // Main display
+    VisualElement Screen;
+    private float _screen_width;
+    private float _screen_height;
 
     // Error crosshairs
-    VisualElement TangentCrosshair;
+    VisualElement TangentCrosshairVert;
+    VisualElement TangentCrosshairHori;
     VisualElement AngleCrosshair;
+
+    // Rotation marker
+    VisualElement RotationMarker;
 
     private void Start()
     {
@@ -60,6 +81,10 @@ internal class DadUiController : KerbalMonoBehaviour
             return;
         }
 
+        // Update screen dimensions
+        _screen_width = Screen.resolvedStyle.width;
+        _screen_height = Screen.resolvedStyle.height;
+
         // Update RDIST & RVEL
         PatchedConicsOrbit targetOrbit = _currentTarget?.Orbit as PatchedConicsOrbit;
 
@@ -77,11 +102,14 @@ internal class DadUiController : KerbalMonoBehaviour
 
                 if (_activeVessel.Orbit.referenceBody == targetOrbit.referenceBody)
                 {
-                    RDstLabel.text = $"RDST: {toDisplay(relDist)}m";
-                    RVelLabel.text = $"RVEL: {toDisplay(relSpeed)}m/s";
+                    CdstLabel.text = $"CDST:{toDisplay(relDist)}m";
+                    CvelLabel.text = $"CVEL:{toDisplay(relSpeed)}m/s";
 
-                    TangentCrosshair.transform.position = new Vector3(-20, -20, 0);
-                    AngleCrosshair.transform.position = new Vector3(20, 10, 0);
+                    TangentCrosshairVert.transform.position = new Vector3(-20, 0);
+                    TangentCrosshairHori.transform.position = new Vector3(0, -20);
+                    AngleCrosshair.transform.position = new Vector3(20, 50);
+
+                    RotationMarker.transform.position = new Vector3(0, -_screen_height / 2);
                 }
             }
         }
@@ -130,22 +158,41 @@ internal class DadUiController : KerbalMonoBehaviour
         CloseButton = s_container.Q<Button>("close-button");
         CloseButton.clicked += () => DockingAlignmentDisplayPlugin.Instance.ToggleButton(false);
 
-        // RDist & RVel Labels
-        RDstLabel = s_container.Q<Label>("rdst");
-        RVelLabel = s_container.Q<Label>("rvel");
+        // Labels
+        CdstLabel = s_container.Q<Label>("cdst");
+        CvelLabel = s_container.Q<Label>("cvel");
+        TofsLabel = s_container.Q<Label>("tofs");
+        TvelLabel = s_container.Q<Label>("tvel");
+
+        // Main display
+        Screen = s_container.Q<VisualElement>("screen");
+        _screen_width = Screen.resolvedStyle.width;
+        _screen_height = Screen.resolvedStyle.height;
 
         // Error crosshairs
-        TangentCrosshair = s_container.Q<VisualElement>("tangent-cross");
+        TangentCrosshairVert = s_container.Q<VisualElement>("tangent-vert");
+        TangentCrosshairHori = s_container.Q<VisualElement>("tangent-hori");
         AngleCrosshair = s_container.Q<VisualElement>("angle-cross");
 
         // Rotate Angle crosshair
         AngleCrosshair.transform.rotation = Quaternion.AngleAxis(45, Vector3.forward);
+
+        // Rotation marker
+        RotationMarker = s_container.Q<VisualElement>("rotation-marker");
 
         _initialized = true;
     }
 
     private string toDisplay(double value)
     {
-        return $"{value,5:F1} ";
+        var exponent = Math.Log10(value);
+
+        List<string> unitPrefixes = new List<string> { "", "k", "M" };
+        var prefixIndex = (int)Math.Floor(exponent / 3);
+        var prefix = exponent < 0 ? "c" : unitPrefixes[prefixIndex];
+
+        var multiplier = Math.Pow(10, exponent < 0 ? 2 : 3 * prefixIndex);
+
+        return $"{value * multiplier,7:F1} {prefix}";
     }
 }

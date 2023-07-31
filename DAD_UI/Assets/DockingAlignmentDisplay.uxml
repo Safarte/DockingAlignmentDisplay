@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="DockingAlignmentDisplay.uss" />
     <ui:VisualElement name="root" class="root" style="flex-direction: row; align-items: flex-start; justify-content: center; flex-wrap: wrap;">
-        <ui:Label text="D.A.D." display-tooltip-when-elided="true" name="title" class="title" />
+        <ui:Label text="DOCKING-ALIGNMENT" display-tooltip-when-elided="true" name="title" class="title" />
         <ui:Button display-tooltip-when-elided="true" text="×" name="close-button" enable-rich-text="true" class="close-button" />
         <ui:VisualElement name="screen" class="screen" style="flex-wrap: wrap; overflow: hidden;">
             <ui:VisualElement name="crosshair-vertical" class="crosshair-vertical" style="position: absolute; left: 50%;" />
@@ -24,6 +24,9 @@
             <ui:VisualElement name="angle-cross" class="angle-cross">
                 <ui:VisualElement name="angle-vert" class="angle-vert" />
                 <ui:VisualElement name="angle-hori" class="angle-hori" />
+            </ui:VisualElement>
+            <ui:VisualElement name="no-target" class="no-target" style="display: none;">
+                <ui:Label text="NO VALID TARGET" display-tooltip-when-elided="true" name="no-target-text" class="no-target-text" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="rel-info" style="align-items: auto; flex-wrap: wrap; flex-direction: row; justify-content: flex-start; width: 100%;">

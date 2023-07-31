@@ -6,6 +6,7 @@
  * https://opensource.org/licenses/MIT.
  */
 using BepInEx;
+using BepInEx.Logging;
 using JetBrains.Annotations;
 using KSP.UI.Binding;
 using SpaceWarp;
@@ -29,13 +30,18 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
     [PublicAPI] public const string ModName = MyPluginInfo.PLUGIN_NAME;
     [PublicAPI] public const string ModVer = MyPluginInfo.PLUGIN_VERSION;
 
+    // AppBar button related stuff
     public static bool InterfaceEnabled = false;
     public const string ToolbarFlightButtonID = "BTN-DockingAlignmentDisplayFlight";
 
+    // UI controller
     DadUiController uiController;
 
     // Singleton instance of the plugin class
     public static DockingAlignmentDisplayPlugin Instance { get; set; }
+
+    // Logger
+    public new static ManualLogSource Logger { get; set; }
 
     /// <summary>
     /// Runs when the mod is first initialized.
@@ -43,6 +49,9 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
     public override void OnInitialized()
     {
         base.OnInitialized();
+
+        // Logger
+        Logger = base.Logger;
 
         // Load UITK GUI
         var dadUxml = AssetManager.GetAsset<VisualTreeAsset>($"{Info.Metadata.GUID}/dad_ui/dockingalignmentdisplay.uxml");

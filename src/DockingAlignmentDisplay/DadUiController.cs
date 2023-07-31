@@ -5,8 +5,8 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
+using DockingAlignmentDisplay.Geometry;
 using KSP.Game;
-using KSP.Sim.impl;
 using KSP.UI.Binding;
 using UitkForKsp2.API;
 using UnityEngine;
@@ -24,11 +24,13 @@ internal class DadUiController : KerbalMonoBehaviour
     private bool _initialized = false;
     public static bool GUIEnabled = true;
 
-    // Active Vessel
-    VesselComponent _activeVessel;
+    // Color classes
+    string _red = "bg-red";
+    string _green = "bg-green";
+    string _gold = "bg-gold";
 
-    // Target
-    SimulationObjectModel _currentTarget;
+    // Current Target
+    Target target = new Target();
 
     // Close Button
     Button CloseButton;
@@ -48,12 +50,15 @@ internal class DadUiController : KerbalMonoBehaviour
     private float _screen_height;
 
     // Error crosshairs
-    VisualElement TangentCrosshairVert;
     VisualElement TangentCrosshairHori;
+    VisualElement TangentCrosshairVert;
     VisualElement AngleCrosshair;
 
     // Rotation marker
     VisualElement RotationMarker;
+
+    // No Target error screen
+    VisualElement NoTargetScreen;
 
     private void Start()
     {
@@ -68,10 +73,6 @@ internal class DadUiController : KerbalMonoBehaviour
             return;
         }
 
-        // Get active vessel & current target
-        _activeVessel = Game?.ViewController?.GetActiveVehicle(true)?.GetSimVessel(true);
-        _currentTarget = _activeVessel?.TargetObject;
-
         // Update GUI display status
         if (GUIEnabled && DockingAlignmentDisplayPlugin.InterfaceEnabled)
             s_container.style.display = DisplayStyle.Flex;
@@ -85,33 +86,28 @@ internal class DadUiController : KerbalMonoBehaviour
         _screen_width = Screen.resolvedStyle.width;
         _screen_height = Screen.resolvedStyle.height;
 
-        // Update RDIST & RVEL
-        PatchedConicsOrbit targetOrbit = _currentTarget?.Orbit as PatchedConicsOrbit;
+        // Update target data
+        target.Update(Game);
 
-        if (_currentTarget != null)
+        if (target.IsValid)
         {
-            if (_currentTarget.IsPart)
-            {
-                targetOrbit = _currentTarget?.Part.PartOwner.SimulationObject.Orbit as PatchedConicsOrbit;
-            }
+            // Hide "No Target" screen
+            NoTargetScreen.style.display = DisplayStyle.None;
 
-            if (targetOrbit != null)
-            {
-                var relDist = (_activeVessel.Orbit.Position - targetOrbit.Position).magnitude;
-                var relSpeed = (_activeVessel.Orbit.relativeVelocity - targetOrbit.relativeVelocity).magnitude;
+            UpdateTangentCrosshair(target.RelativePosition, true);
+            UpdateMetrics(target.RelativePosition, target.RelativeVelocity, true);
+            AngleCrosshair.transform.position = new Vector3(20, 50);
+            RotationMarker.transform.position = new Vector3(0, -_screen_height / 2);
+        }
+        else
+        {
+            // Show "No Target" screen
+            NoTargetScreen.style.display = DisplayStyle.Flex;
 
-                if (_activeVessel.Orbit.referenceBody == targetOrbit.referenceBody)
-                {
-                    CdstLabel.text = $"CDST:{toDisplay(relDist)}m";
-                    CvelLabel.text = $"CVEL:{toDisplay(relSpeed)}m/s";
-
-                    TangentCrosshairVert.transform.position = new Vector3(-20, 0);
-                    TangentCrosshairHori.transform.position = new Vector3(0, -20);
-                    AngleCrosshair.transform.position = new Vector3(20, 50);
-
-                    RotationMarker.transform.position = new Vector3(0, -_screen_height / 2);
-                }
-            }
+            UpdateTangentCrosshair(Vector3.zero, false);
+            UpdateMetrics(Vector3.zero, Vector3.zero, false);
+            AngleCrosshair.style.display = DisplayStyle.None;
+            RotationMarker.style.display = DisplayStyle.None;
         }
     }
 
@@ -170,8 +166,8 @@ internal class DadUiController : KerbalMonoBehaviour
         _screen_height = Screen.resolvedStyle.height;
 
         // Error crosshairs
-        TangentCrosshairVert = s_container.Q<VisualElement>("tangent-vert");
         TangentCrosshairHori = s_container.Q<VisualElement>("tangent-hori");
+        TangentCrosshairVert = s_container.Q<VisualElement>("tangent-vert");
         AngleCrosshair = s_container.Q<VisualElement>("angle-cross");
 
         // Rotate Angle crosshair
@@ -180,10 +176,19 @@ internal class DadUiController : KerbalMonoBehaviour
         // Rotation marker
         RotationMarker = s_container.Q<VisualElement>("rotation-marker");
 
+        // No Target error screen
+        NoTargetScreen = s_container.Q<VisualElement>("no-target");
+        NoTargetScreen.style.display = DisplayStyle.None;
+
         _initialized = true;
     }
 
-    private string toDisplay(double value)
+    /// <summary>
+    /// Converts <c>value</c> to a 4-number string with 1 decimal point and correct unit prefix
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    private string ToDisplay(double value)
     {
         var exponent = Math.Log10(value);
 
@@ -194,5 +199,69 @@ internal class DadUiController : KerbalMonoBehaviour
         var multiplier = Math.Pow(10, exponent < 0 ? 2 : 3 * prefixIndex);
 
         return $"{value * multiplier,7:F1} {prefix}";
+    }
+
+    /// <summary>
+    /// Moves the tangent error crosshair to the specified (<c>x</c>,<c>y</c>) position on the screen.
+    /// If the (x,y) error is larger than 100m, draw the crosshair at the edge of the screen.
+    /// Set the crosshair's color to red if positionError.z < 0 (the craft is behind the target docking port).
+    /// </summary>
+    /// <param name="relativePos">Relative position in the parallel frame</param>
+    private void UpdateTangentCrosshair(Vector3 relativePos, bool validTarget)
+    {
+        if (validTarget)
+        {
+            // Display crosshair
+            TangentCrosshairHori.style.display = DisplayStyle.Flex;
+            TangentCrosshairVert.style.display = DisplayStyle.Flex;
+
+            // Update color according to course distance (z position error)
+            TangentCrosshairHori.EnableInClassList(_green, relativePos.z > 0);
+            TangentCrosshairVert.EnableInClassList(_green, relativePos.z > 0);
+            TangentCrosshairHori.EnableInClassList(_red, relativePos.z < 0);
+            TangentCrosshairVert.EnableInClassList(_red, relativePos.z < 0);
+
+            // Convert xy error to screen coordinates with log scale
+            var screenX = Mathf.Sign(relativePos.x) * _screen_width * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.x), 0.01f, 90f)) + 2) / 8;
+            var screenY = Mathf.Sign(relativePos.y) * _screen_height * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.y), 0.01f, 90f)) + 2) / 8;
+
+            // Move crosshair to desired position
+            TangentCrosshairHori.transform.position = new Vector3(0, -screenY);
+            TangentCrosshairVert.transform.position = new Vector3(screenX, 0);
+        }
+        else
+        {
+            // Hide crosshair
+            TangentCrosshairHori.style.display = DisplayStyle.None;
+            TangentCrosshairVert.style.display = DisplayStyle.None;
+        }
+    }
+
+    // TODO
+    private void UpdateMetrics(Vector3 relativePos, Vector3 relativeVel, bool validTarget)
+    {
+        if (validTarget)
+        {
+            // Compute metrics to display
+            var cDst = relativePos.z;
+            var cVel = relativeVel.z;
+            var tOfs = new Vector2(relativePos.x, relativePos.y).magnitude;
+            var tVel = new Vector2(relativeVel.x, relativeVel.y).magnitude;
+
+            // Update UI text
+            CdstLabel.text = $"CDST:{ToDisplay(cDst)}m";
+            CvelLabel.text = $"CVEL:{ToDisplay(cVel)}m/s";
+            TofsLabel.text = $"TOFS:{ToDisplay(tOfs)}m";
+            TvelLabel.text = $"TVEL:{ToDisplay(tVel)}m/s";
+        }
+        else
+        {
+            // Update UI text metrics with "N/A"
+            string na = "N/A";
+            CdstLabel.text = $"CDST:{na,7}m";
+            CvelLabel.text = $"CVEL:{na,7}m/s";
+            TofsLabel.text = $"TOFS:{na,7}m";
+            TvelLabel.text = $"TVEL:{na,7}m/s";
+        }
     }
 }

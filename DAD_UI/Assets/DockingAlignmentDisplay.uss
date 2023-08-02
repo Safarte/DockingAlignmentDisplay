@@ -173,15 +173,24 @@
 }
 
 .angle-cross {
-    width: 25%;
-    height: 25%;
+    width: 0;
+    height: 0;
+    justify-content: center;
+    align-items: center;
 }
 
 .angle-hori {
-    width: 100%;
+    width: 60px;
     height: 1px;
     position: absolute;
     top: 50%;
+}
+
+.angle-vert {
+    width: 1px;
+    height: 60px;
+    position: absolute;
+    left: 50%;
 }
 
 .rotation-marker {
@@ -210,13 +219,6 @@
     justify-content: center;
 }
 
-.angle-vert {
-    width: 1px;
-    height: 100%;
-    position: absolute;
-    left: 50%;
-}
-
 .no-target-text {
     -unity-text-align: upper-center;
     color: rgb(255, 66, 72);
@@ -224,16 +226,16 @@
 }
 
 .bg-green {
-    background-color: rgba(0, 255, 102, 255);
-    -unity-background-image-tint-color: rgba(0, 255, 102, 255);
+    background-color: rgb(0, 255, 102);
+    -unity-background-image-tint-color: rgb(0, 255, 102);
 }
 
 .bg-red {
     background-color: rgb(209, 22, 13);
-    -unity-background-image-tint-color: rgba(209, 22, 13, 255);
+    -unity-background-image-tint-color: rgb(209, 22, 13);
 }
 
 .bg-gold {
     background-color: rgb(204, 171, 0);
-    -unity-background-image-tint-color: rgba(204, 171, 0, 255);
+    -unity-background-image-tint-color: rgb(204, 171, 0);
 }

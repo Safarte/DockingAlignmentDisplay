@@ -52,7 +52,10 @@ internal class DadUiController : KerbalMonoBehaviour
     // Error crosshairs
     VisualElement TangentCrosshairHori;
     VisualElement TangentCrosshairVert;
+
     VisualElement AngleCrosshair;
+    VisualElement AngleHori;
+    VisualElement AngleVert;
 
     // Rotation marker
     VisualElement RotationMarker;
@@ -96,7 +99,7 @@ internal class DadUiController : KerbalMonoBehaviour
 
             UpdateTangentCrosshair(target.RelativePosition, true);
             UpdateMetrics(target.RelativePosition, target.RelativeVelocity, true);
-            AngleCrosshair.transform.position = new Vector3(20, 50);
+            UpdateAngleCrosshair(target.RelativeOrientation, true);
             RotationMarker.transform.position = new Vector3(0, -_screen_height / 2);
         }
         else
@@ -106,7 +109,7 @@ internal class DadUiController : KerbalMonoBehaviour
 
             UpdateTangentCrosshair(Vector3.zero, false);
             UpdateMetrics(Vector3.zero, Vector3.zero, false);
-            AngleCrosshair.style.display = DisplayStyle.None;
+            UpdateAngleCrosshair(Vector3.zero, false);
             RotationMarker.style.display = DisplayStyle.None;
         }
     }
@@ -169,6 +172,8 @@ internal class DadUiController : KerbalMonoBehaviour
         TangentCrosshairHori = s_container.Q<VisualElement>("tangent-hori");
         TangentCrosshairVert = s_container.Q<VisualElement>("tangent-vert");
         AngleCrosshair = s_container.Q<VisualElement>("angle-cross");
+        AngleHori = s_container.Q<VisualElement>("angle-hori");
+        AngleVert = s_container.Q<VisualElement>("angle-vert");
 
         // Rotate Angle crosshair
         AngleCrosshair.transform.rotation = Quaternion.AngleAxis(45, Vector3.forward);
@@ -190,7 +195,7 @@ internal class DadUiController : KerbalMonoBehaviour
     /// <returns></returns>
     private string ToDisplay(double value)
     {
-        var exponent = Math.Log10(value);
+        var exponent = Math.Log10(Math.Abs(value));
 
         List<string> unitPrefixes = new List<string> { "", "k", "M" };
         var prefixIndex = (int)Math.Floor(exponent / 3);
@@ -202,11 +207,11 @@ internal class DadUiController : KerbalMonoBehaviour
     }
 
     /// <summary>
-    /// Moves the tangent error crosshair to the specified (<c>x</c>,<c>y</c>) position on the screen.
+    /// Moves the tangent error crosshair to the specified position on the screen.
     /// If the (x,y) error is larger than 100m, draw the crosshair at the edge of the screen.
     /// Set the crosshair's color to red if positionError.z < 0 (the craft is behind the target docking port).
     /// </summary>
-    /// <param name="relativePos">Relative position in the parallel frame</param>
+    /// <param name="relativePos">Relative position in the target parallel frame</param>
     private void UpdateTangentCrosshair(Vector3 relativePos, bool validTarget)
     {
         if (validTarget)
@@ -222,8 +227,8 @@ internal class DadUiController : KerbalMonoBehaviour
             TangentCrosshairVert.EnableInClassList(_red, relativePos.z < 0);
 
             // Convert xy error to screen coordinates with log scale
-            var screenX = Mathf.Sign(relativePos.x) * _screen_width * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.x), 0.01f, 90f)) + 2) / 8;
-            var screenY = Mathf.Sign(relativePos.y) * _screen_height * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.y), 0.01f, 90f)) + 2) / 8;
+            var screenX = Mathf.Sign(relativePos.x) * _screen_width * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.x), 0.1f, 990f)) + 1) / 8;
+            var screenY = Mathf.Sign(relativePos.y) * _screen_height * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.y), 0.1f, 990f)) + 1) / 8;
 
             // Move crosshair to desired position
             TangentCrosshairHori.transform.position = new Vector3(0, -screenY);
@@ -237,7 +242,49 @@ internal class DadUiController : KerbalMonoBehaviour
         }
     }
 
-    // TODO
+    /// <summary>
+    /// Moves the angle error crosshair to the required position on the screen based on the relative orientation.
+    /// If the angle error is larger than 40°, draw the crosshair at the edge of the screen.
+    /// Set the crosshair's color to red if the docking port is pointed away from the target.
+    /// </summary>
+    /// <param name="relativeOrientation">Relative orientation (docking port's "up" in the parallel frame)</param>
+    /// <param name="validTarget"></param>
+    private void UpdateAngleCrosshair(Vector3 relativeOrientation, bool validTarget)
+    {
+        if (validTarget)
+        {
+            // Display crosshair
+            AngleCrosshair.style.display = DisplayStyle.Flex;
+
+            // Adjust crosshair size
+            AngleHori.style.width = new StyleLength(0.3f * _screen_width);
+            AngleVert.style.height = new StyleLength(0.3f * _screen_height);
+
+            // Update color based on if we are pointed toward or away from the target port
+            AngleHori.EnableInClassList(_gold, relativeOrientation.y < 0);
+            AngleVert.EnableInClassList(_gold, relativeOrientation.y < 0);
+            AngleHori.EnableInClassList(_red, relativeOrientation.y > 0);
+            AngleVert.EnableInClassList(_red, relativeOrientation.y > 0);
+
+            // Error to screen position
+            var screenX = Mathf.Clamp(90 / 40 * -relativeOrientation.z, -0.99f, 0.99f);
+            var screenY = Mathf.Clamp(90 / 40 * -relativeOrientation.x, -0.99f, 0.99f);
+
+            // Move crosshair to desired position
+            AngleCrosshair.transform.position = new Vector3(_screen_width * screenX / 2, _screen_height * screenY / 2);
+        }
+        else
+        {
+            AngleCrosshair.style.display = DisplayStyle.None;
+        }
+    }
+
+    /// <summary>
+    /// Updates the numerical metrics that represent: course distance, course velocity, tangent offset and tangent velocity.
+    /// </summary>
+    /// <param name="relativePos">Relative position in the target parallel frame</param>
+    /// <param name="relativeVel">Relative velocity in the target parallel frame</param>
+    /// <param name="validTarget"></param>
     private void UpdateMetrics(Vector3 relativePos, Vector3 relativeVel, bool validTarget)
     {
         if (validTarget)
@@ -257,7 +304,7 @@ internal class DadUiController : KerbalMonoBehaviour
         else
         {
             // Update UI text metrics with "N/A"
-            string na = "N/A";
+            string na = "N/A ";
             CdstLabel.text = $"CDST:{na,7}m";
             CvelLabel.text = $"CVEL:{na,7}m/s";
             TofsLabel.text = $"TOFS:{na,7}m";

@@ -11,10 +11,10 @@
             <ui:VisualElement name="crosshair-circle-1" class="crosshair-circle crosshair-circle-1" style="position: absolute; left: 25%; top: 25%; width: 50%; height: 50%;" />
             <ui:VisualElement name="crosshair-circle-0" class="crosshair-circle crosshair-circle-0" style="position: absolute; left: 37.5%; top: 37.5%; width: 25%; height: 25%;" />
             <ui:Label text="10^x m" display-tooltip-when-elided="true" name="tangent-scale" class="misalignment-text tangent-text" style="position: absolute; left: 65%; bottom: 50%;" />
-            <ui:Label text="-1" display-tooltip-when-elided="true" name="tangent-1" class="tangent-text" style="position: absolute; left: 55%; flex-direction: column; top: 51%;" />
-            <ui:Label text="0" display-tooltip-when-elided="true" name="tangent0" class="tangent-text" style="position: absolute; left: 70%; top: 51%;" />
-            <ui:Label text="1" display-tooltip-when-elided="true" name="tangent1" class="tangent-text" style="position: absolute; left: 83%; top: 51%;" />
-            <ui:Label text="2" display-tooltip-when-elided="true" name="tangent2" class="tangent-text" style="position: absolute; left: 96%; top: 51%;" />
+            <ui:Label text="0" display-tooltip-when-elided="true" name="tangent0" class="tangent-text" style="position: absolute; left: 57%; flex-direction: column; top: 51%;" />
+            <ui:Label text="1" display-tooltip-when-elided="true" name="tangent1" class="tangent-text" style="position: absolute; left: 70%; top: 51%;" />
+            <ui:Label text="2" display-tooltip-when-elided="true" name="tangent2" class="tangent-text" style="position: absolute; left: 83%; top: 51%;" />
+            <ui:Label text="3" display-tooltip-when-elided="true" name="tangent3" class="tangent-text" style="position: absolute; left: 96%; top: 51%;" />
             <ui:Label text="10°" display-tooltip-when-elided="true" name="angle-10" class="angle-text" style="position: absolute; left: 52%; flex-direction: column; top: 32%;" />
             <ui:Label text="20°" display-tooltip-when-elided="true" name="angle-20" class="angle-text" style="position: absolute; left: 52%; top: 20%;" />
             <ui:Label text="30°" display-tooltip-when-elided="true" name="angle-30" class="angle-text" style="position: absolute; left: 52%; top: 8%;" />
@@ -22,8 +22,8 @@
             <ui:VisualElement name="tangent-hori" class="cross-hori" style="position: absolute;" />
             <ui:VisualElement name="tangent-vert" class="cross-vert" />
             <ui:VisualElement name="angle-cross" class="angle-cross">
-                <ui:VisualElement name="angle-vert" class="angle-vert" />
-                <ui:VisualElement name="angle-hori" class="angle-hori" />
+                <ui:VisualElement name="angle-vert" class="angle-vert bg-gold" />
+                <ui:VisualElement name="angle-hori" class="angle-hori bg-gold" />
             </ui:VisualElement>
             <ui:VisualElement name="no-target" class="no-target" style="display: none;">
                 <ui:Label text="NO VALID TARGET" display-tooltip-when-elided="true" name="no-target-text" class="no-target-text" />

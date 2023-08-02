@@ -3,7 +3,7 @@
   "mod_id": "DockingAlignmentDisplay",
   "author": "Safarte",
   "name": "Docking Alignement Display",
-  "description": "a",
+  "description": "Adds a new instrument providing necessary information to dock with precision.",
   "source": "https://github.com/Safarte/DockingAlignmentDisplay",
   "version": "0.1.0",
   "version_check": "https://raw.githubusercontent.com/Safarte/DockingAlignmentDisplay/main/docking_alignment_display/swinfo.json",

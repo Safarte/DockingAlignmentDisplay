@@ -1,4 +1,12 @@
-﻿using KSP.Game;
+﻿/* Docking Alignement Display
+ * Copyright (C) 2023  Safarte
+ *
+ * Use of this source code is governed by an MIT-style
+ * license that can be found in the LICENSE file or at
+ * https://opensource.org/licenses/MIT.
+ */
+using KSP.Game;
+using KSP.Sim;
 using KSP.Sim.impl;
 using UnityEngine;
 
@@ -18,11 +26,72 @@ internal class Target
     // Target's orbit
     private PatchedConicsOrbit _targetOrbit;
 
-    public Vector3 RelativePosition { get => new Vector3(150, 60, 10); }
+    public Vector3 RelativePosition
+    {
+        get
+        {
+            // Target's frame of reference
+            var targetFrame = _currentTarget.transform.coordinateSystem;
 
-    public Vector3 RelativeVelocity { get => (_orbit.relativeVelocity - _targetOrbit.relativeVelocity).vector; }
+            // Center of own vessel and of target part
+            Position center = _activeVessel.controlTransform.Position;
+            Position targetCenter = _currentTarget.transform.Position;
 
-    public Vector3 RelativeOrientation { get => new Vector3(1, 1, 1).normalized; }
+            // Convert to target's frame of reference
+            Vector3 localCenter = targetFrame.ToLocalPosition(center);
+            Vector3 localTargetCenter = targetFrame.ToLocalPosition(targetCenter);
+
+            // Relative position vector
+            Vector3 error = localCenter - localTargetCenter;
+
+            // Basis change
+            error = new Vector3(-error.z, error.x, error.y);
+
+            return error;
+        }
+    }
+
+    public Vector3 RelativeVelocity
+    {
+        get
+        {
+            // Target's frame of reference
+            var targetFrame = _currentTarget.transform.coordinateSystem;
+
+            // Center of own vessel and of target part
+            var vel = _activeVessel.Velocity.relativeVelocity;
+            var targetVel = _currentTarget.Part.PartOwner.SimulationObject.Vessel.Velocity.relativeVelocity;
+
+            // Convert to target's frame of reference
+            Vector3 localVel = targetFrame.ToLocalVector(vel);
+            Vector3 localTargetVel = targetFrame.ToLocalVector(targetVel);
+
+            // Relative position vector
+            Vector3 error = localVel - localTargetVel;
+
+            // Basis change
+            error = new Vector3(-error.z, error.x, -error.y);
+
+            return error;
+        }
+    }
+
+    public Vector3 RelativeOrientation
+    {
+        get
+        {
+            // Target's frame of reference
+            var targetFrame = _currentTarget.transform.coordinateSystem;
+
+            // Docking port "up" vector
+            var up = _activeVessel.controlTransform.up;
+
+            // Convert to target's frame of reference
+            var localUp = targetFrame.ToLocalVector(up);
+
+            return localUp;
+        }
+    }
 
     public bool IsValid
     {
@@ -40,9 +109,12 @@ internal class Target
         // Get current target
         _currentTarget = _activeVessel?.TargetObject;
 
-        // Get target's orbit
-        _targetOrbit = _currentTarget?.Orbit as PatchedConicsOrbit;
-        if (_currentTarget.IsPart)
-            _targetOrbit = _currentTarget?.Part.PartOwner.SimulationObject.Orbit as PatchedConicsOrbit;
+        if (_currentTarget != null)
+        {
+            // Get target's orbit
+            _targetOrbit = _currentTarget?.Orbit as PatchedConicsOrbit;
+            if (_currentTarget.IsPart)
+                _targetOrbit = _currentTarget?.Part.PartOwner.SimulationObject.Orbit as PatchedConicsOrbit;
+        }
     }
 }

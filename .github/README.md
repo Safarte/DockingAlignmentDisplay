@@ -2,6 +2,8 @@
 
 Adds a new instrument providing necessary information to dock with precision.
 
+Inspired by the great [Docking Port Alignment Indicator](https://spacedock.info/mod/543/Docking%20Port%20Alignment%20Indicator) mod for KSP1 as well as the Docking MFD from the Orbiter Game.
+
 ## Installation
 
 **It is highly recommended to use CKAN ([Download Here](https://github.com/KSP-CKAN/CKAN)) to install Docking Alignment Display!**
@@ -19,6 +21,7 @@ Adds a new instrument providing necessary information to dock with precision.
 
 - [x] Basic docking informations: tangent offset, misalignment, basic metrics
 - [ ] Relative rotation indicator
+- [ ] Relative velocity indicator
 - [ ] Setting to toggle between linear and log scale for the offset indicator
 - [ ] Docking Mode indicator
 - [ ] Simple selector for nearby docking ports to target

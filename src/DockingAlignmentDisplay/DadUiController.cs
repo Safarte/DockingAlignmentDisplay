@@ -261,14 +261,14 @@ internal class DadUiController : KerbalMonoBehaviour
             AngleVert.style.height = new StyleLength(0.3f * _screen_height);
 
             // Update color based on if we are pointed toward or away from the target port
-            AngleHori.EnableInClassList(_gold, relativeOrientation.y < 0);
-            AngleVert.EnableInClassList(_gold, relativeOrientation.y < 0);
-            AngleHori.EnableInClassList(_red, relativeOrientation.y > 0);
-            AngleVert.EnableInClassList(_red, relativeOrientation.y > 0);
+            AngleHori.EnableInClassList(_gold, relativeOrientation.z < 0);
+            AngleVert.EnableInClassList(_gold, relativeOrientation.z < 0);
+            AngleHori.EnableInClassList(_red, relativeOrientation.z > 0);
+            AngleVert.EnableInClassList(_red, relativeOrientation.z > 0);
 
             // Error to screen position
-            var screenX = Mathf.Clamp(90 / 40 * -relativeOrientation.z, -0.99f, 0.99f);
-            var screenY = Mathf.Clamp(90 / 40 * -relativeOrientation.x, -0.99f, 0.99f);
+            var screenX = Mathf.Clamp(90 / 40 * Mathf.Asin(-relativeOrientation.x) * 2 / Mathf.PI, -0.99f, 0.99f);
+            var screenY = Mathf.Clamp(90 / 40 * Mathf.Asin(-relativeOrientation.y) * 2 / Mathf.PI, -0.99f, 0.99f);
 
             // Move crosshair to desired position
             AngleCrosshair.transform.position = new Vector3(_screen_width * screenX / 2, _screen_height * screenY / 2);

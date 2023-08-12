@@ -18,7 +18,9 @@
             <ui:Label text="10°" display-tooltip-when-elided="true" name="angle-10" class="angle-text" style="position: absolute; left: 52%; flex-direction: column; top: 32%;" />
             <ui:Label text="20°" display-tooltip-when-elided="true" name="angle-20" class="angle-text" style="position: absolute; left: 52%; top: 20%;" />
             <ui:Label text="30°" display-tooltip-when-elided="true" name="angle-30" class="angle-text" style="position: absolute; left: 52%; top: 8%;" />
-            <ui:VisualElement name="rotation-marker" class="rotation-marker" />
+            <ui:VisualElement name="rotation-marker" class="rotation-marker">
+                <ui:VisualElement name="rotation-marker-sprite" class="rotation-marker-sprite" />
+            </ui:VisualElement>
             <ui:VisualElement name="tangent-hori" class="cross-hori" style="position: absolute;" />
             <ui:VisualElement name="tangent-vert" class="cross-vert" />
             <ui:VisualElement name="angle-cross" class="angle-cross">

@@ -105,6 +105,23 @@ internal class Target
         }
     }
 
+    public float RelativeRoll
+    {
+        get
+        {
+            // Docking port "up" vector
+            var fwd = _activeVessel.controlTransform.forward;
+
+            // Convert to target's frame of reference
+            var localFwd = _targetFrame.ToLocalVector(fwd).normalized;
+
+            // Relative roll in radians ([-PI, PI])
+            float relRoll = -Mathf.Sign(Vector3.Dot(localFwd, _tgtLeft.normalized)) * Mathf.Acos(-Vector3.Dot(localFwd, _tgtFwd.normalized));
+
+            return relRoll;
+        }
+    }
+
     public bool IsValid
     {
         get => _currentTarget != null && _currentTarget.IsPart && _targetOrbit != null && _orbit.referenceBody == _targetOrbit.referenceBody;

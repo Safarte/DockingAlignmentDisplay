@@ -194,9 +194,17 @@
 }
 
 .rotation-marker {
+    width: 0;
+    height: 0;
+    position: absolute;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.rotation-marker-sprite {
     background-image: url('/Assets/Images/rotation_marker.png');
-    width: 5%;
-    height: 5%;
+    width: 15px;
+    height: 15px;
     -unity-background-scale-mode: scale-to-fit;
     position: absolute;
 }
@@ -238,4 +246,12 @@
 .bg-gold {
     background-color: rgb(204, 171, 0);
     -unity-background-image-tint-color: rgb(204, 171, 0);
+}
+
+.tint-green {
+    -unity-background-image-tint-color: rgb(0, 255, 102);
+}
+
+.tint-red {
+    -unity-background-image-tint-color: rgb(209, 22, 13);
 }

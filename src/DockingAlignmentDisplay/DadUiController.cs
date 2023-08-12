@@ -59,6 +59,7 @@ internal class DadUiController : KerbalMonoBehaviour
 
     // Rotation marker
     VisualElement RotationMarker;
+    VisualElement RotationMarkerSprite;
 
     // No Target error screen
     VisualElement NoTargetScreen;
@@ -100,7 +101,7 @@ internal class DadUiController : KerbalMonoBehaviour
             UpdateTangentCrosshair(target.RelativePosition, true);
             UpdateMetrics(target.RelativePosition, target.RelativeVelocity, true);
             UpdateAngleCrosshair(target.RelativeOrientation, true);
-            RotationMarker.transform.position = new Vector3(0, -_screen_height / 2);
+            UpdateRollIndicator(target.RelativeRoll, true);
         }
         else
         {
@@ -110,7 +111,7 @@ internal class DadUiController : KerbalMonoBehaviour
             UpdateTangentCrosshair(Vector3.zero, false);
             UpdateMetrics(Vector3.zero, Vector3.zero, false);
             UpdateAngleCrosshair(Vector3.zero, false);
-            RotationMarker.style.display = DisplayStyle.None;
+            UpdateRollIndicator(0, false);
         }
     }
 
@@ -180,6 +181,7 @@ internal class DadUiController : KerbalMonoBehaviour
 
         // Rotation marker
         RotationMarker = s_container.Q<VisualElement>("rotation-marker");
+        RotationMarkerSprite = s_container.Q<VisualElement>("rotation-marker-sprite");
 
         // No Target error screen
         NoTargetScreen = s_container.Q<VisualElement>("no-target");
@@ -223,8 +225,8 @@ internal class DadUiController : KerbalMonoBehaviour
             // Update color according to course distance (z position error)
             TangentCrosshairHori.EnableInClassList(_green, relativePos.z > 0);
             TangentCrosshairVert.EnableInClassList(_green, relativePos.z > 0);
-            TangentCrosshairHori.EnableInClassList(_red, relativePos.z < 0);
-            TangentCrosshairVert.EnableInClassList(_red, relativePos.z < 0);
+            TangentCrosshairHori.EnableInClassList(_red, relativePos.z <= 0);
+            TangentCrosshairVert.EnableInClassList(_red, relativePos.z <= 0);
 
             // Convert xy error to screen coordinates with log scale
             var screenX = Mathf.Sign(relativePos.x) * _screen_width * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.x), 0.1f, 990f)) + 1) / 8;
@@ -263,8 +265,8 @@ internal class DadUiController : KerbalMonoBehaviour
             // Update color based on if we are pointed toward or away from the target port
             AngleHori.EnableInClassList(_gold, relativeOrientation.z < 0);
             AngleVert.EnableInClassList(_gold, relativeOrientation.z < 0);
-            AngleHori.EnableInClassList(_red, relativeOrientation.z > 0);
-            AngleVert.EnableInClassList(_red, relativeOrientation.z > 0);
+            AngleHori.EnableInClassList(_red, relativeOrientation.z >= 0);
+            AngleVert.EnableInClassList(_red, relativeOrientation.z >= 0);
 
             // Error to screen position
             var screenX = Mathf.Clamp(90 / 40 * Mathf.Asin(-relativeOrientation.x) * 2 / Mathf.PI, -0.99f, 0.99f);
@@ -276,6 +278,34 @@ internal class DadUiController : KerbalMonoBehaviour
         else
         {
             AngleCrosshair.style.display = DisplayStyle.None;
+        }
+    }
+
+    private void UpdateRollIndicator(float relativeRoll, bool validTarget)
+    {
+        if (validTarget)
+        {
+            // Display indicator
+            RotationMarker.style.display = DisplayStyle.Flex;
+
+            // Color
+            var rollDeg = Mathf.Abs(relativeRoll * Mathf.Rad2Deg);
+            RotationMarkerSprite.EnableInClassList("tint-green", rollDeg <= 5);
+            RotationMarkerSprite.EnableInClassList("tint-red", rollDeg > 5);
+
+            // Screen position
+            var screenX = 0.98f * Mathf.Sin(relativeRoll) * _screen_width / 2;
+            var screenY = -0.98f * Mathf.Cos(relativeRoll) * _screen_height / 2;
+
+            // Rotate indicator
+            RotationMarker.transform.rotation = Quaternion.AngleAxis(Mathf.Rad2Deg * relativeRoll, Vector3.forward);
+
+            // Translate indicator
+            RotationMarker.transform.position = new Vector3(screenX, screenY);
+        }
+        else
+        {
+            RotationMarker.style.display = DisplayStyle.None;
         }
     }
 

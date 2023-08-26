@@ -6,9 +6,9 @@
  * https://opensource.org/licenses/MIT.
  */
 using KSP.Api;
-using KSP.Game;
 using KSP.Sim;
 using KSP.Sim.impl;
+using SpaceWarp.API.Game;
 using UnityEngine;
 
 namespace DockingAlignmentDisplay.Geometry;
@@ -127,29 +127,32 @@ internal class Target
         get => _currentTarget != null && _currentTarget.IsPart && _targetOrbit != null && _orbit.referenceBody == _targetOrbit.referenceBody;
     }
 
-    public void Update(GameInstance game)
+    public void Update()
     {
-        // Get active vessel
-        _activeVessel = game?.ViewController?.GetActiveVehicle(true)?.GetSimVessel(true);
+        _activeVessel = Vehicle.ActiveSimVessel;
 
-        // Get own's orbit
-        _orbit = _activeVessel?.Orbit;
-
-        // Get current target
-        _currentTarget = _activeVessel?.TargetObject;
-
-        if (_currentTarget != null)
+        if (_activeVessel != null)
         {
-            // Get target's orbit
-            _targetOrbit = _currentTarget?.Orbit as PatchedConicsOrbit;
-            if (_currentTarget.IsPart)
-                _targetOrbit = _currentTarget?.Part.PartOwner.SimulationObject.Orbit as PatchedConicsOrbit;
 
-            // Target frame & up
-            _targetFrame = _currentTarget.transform.coordinateSystem;
-            _tgtUp = _targetFrame.ToLocalVector(_currentTarget.transform.up);
-            _tgtFwd = _targetFrame.ToLocalVector(_currentTarget.transform.forward);
-            _tgtLeft = _targetFrame.ToLocalVector(_currentTarget.transform.left);
+            // Get own's orbit
+            _orbit = _activeVessel?.Orbit;
+
+            // Get current target
+            _currentTarget = _activeVessel?.TargetObject;
+
+            if (_currentTarget != null)
+            {
+                // Get target's orbit
+                _targetOrbit = _currentTarget?.Orbit as PatchedConicsOrbit;
+                if (_currentTarget.IsPart)
+                    _targetOrbit = _currentTarget?.Part.PartOwner.SimulationObject.Orbit as PatchedConicsOrbit;
+
+                // Target frame & up
+                _targetFrame = _currentTarget.transform.coordinateSystem;
+                _tgtUp = _targetFrame.ToLocalVector(_currentTarget.transform.up);
+                _tgtFwd = _targetFrame.ToLocalVector(_currentTarget.transform.forward);
+                _tgtLeft = _targetFrame.ToLocalVector(_currentTarget.transform.left);
+            }
         }
     }
 }

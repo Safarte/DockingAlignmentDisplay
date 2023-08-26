@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="DockingAlignmentDisplay.uss" />
-    <ui:VisualElement name="root" class="root" style="flex-direction: row; align-items: flex-start; justify-content: center; flex-wrap: wrap;">
+    <ui:VisualElement name="root" class="root">
         <ui:Label text="DOCKING-ALIGNMENT" display-tooltip-when-elided="true" name="title" class="title" />
         <ui:Button display-tooltip-when-elided="true" text="×" name="close-button" enable-rich-text="true" class="close-button" />
         <ui:VisualElement name="screen" class="screen" style="flex-wrap: wrap; overflow: hidden;">
@@ -21,6 +21,10 @@
             <ui:VisualElement name="rotation-marker" class="rotation-marker">
                 <ui:VisualElement name="rotation-marker-sprite" class="rotation-marker-sprite" />
             </ui:VisualElement>
+            <ui:VisualElement name="tvel-marker" class="tvel-marker">
+                <ui:VisualElement name="tvel-line" class="tvel-line" />
+                <ui:VisualElement name="tvel-arrow" class="tvel-arrow" />
+            </ui:VisualElement>
             <ui:VisualElement name="tangent-hori" class="cross-hori" style="position: absolute;" />
             <ui:VisualElement name="tangent-vert" class="cross-vert" />
             <ui:VisualElement name="angle-cross" class="angle-cross">
@@ -31,7 +35,7 @@
                 <ui:Label text="NO VALID TARGET" display-tooltip-when-elided="true" name="no-target-text" class="no-target-text" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="rel-info" style="align-items: auto; flex-wrap: wrap; flex-direction: row; justify-content: flex-start; width: 100%;">
+        <ui:VisualElement name="rel-info" class="rel-info">
             <ui:Label text="CDST: 999.9 km" display-tooltip-when-elided="true" name="cdst" class="rel-text" />
             <ui:Label text="CVEL: 999.9 cm/s" display-tooltip-when-elided="true" name="cvel" class="rel-text" />
             <ui:Label text="TOFS: 999.9 km" display-tooltip-when-elided="true" name="tofs" class="rel-text" />

@@ -20,8 +20,8 @@ Inspired by the great [Docking Port Alignment Indicator](https://spacedock.info/
 ## Planned features
 
 - [x] Basic docking informations: tangent offset, misalignment, basic metrics
-- [ ] Relative rotation indicator
-- [ ] Relative velocity indicator
+- [x] Relative rotation indicator
+- [x] Relative velocity indicator
 - [ ] Setting to toggle between linear and log scale for the offset indicator
 - [ ] Docking Mode indicator
 - [ ] Simple selector for nearby docking ports to target
@@ -51,6 +51,12 @@ When the green crosshair is at the center of the display, you are in front of th
 The small arrow indicates the relative roll between your craft and the target docking port. If the arrow is to the left you need to rotate your craft towards the left.
 
 When the arrow is at the top of the display, you are aligned in roll with the target docking port.
+
+### Tangent velocity
+
+![tvel_explanation](./assets/tvel_explanation.png)
+
+The small green arrow indicates the current tangent velocity vector between your vessel and the target docking port as indicated on the picture.
 
 ### Metrics
 

@@ -43,6 +43,8 @@ internal class DadUiController : KerbalMonoBehaviour
     Label TofsLabel;
     // Tangent Velocity
     Label TvelLabel;
+    // Flight Controls Mode
+    //Label CtrlLabel;
 
     // Main display
     VisualElement Screen;
@@ -61,6 +63,11 @@ internal class DadUiController : KerbalMonoBehaviour
     VisualElement RotationMarker;
     VisualElement RotationMarkerSprite;
 
+    // Tangent velocity marker
+    VisualElement TvelMarker;
+    VisualElement TvelLine;
+    VisualElement TvelArrow;
+
     // No Target error screen
     VisualElement NoTargetScreen;
 
@@ -77,6 +84,12 @@ internal class DadUiController : KerbalMonoBehaviour
             return;
         }
 
+        // Close UI if not controlling a vessel
+        if (Game?.ViewController?.GetActiveSimVessel(true) is null)
+        {
+            DockingAlignmentDisplayPlugin.Instance.ToggleButton(false);
+        }
+
         // Update GUI display status
         if (GUIEnabled && DockingAlignmentDisplayPlugin.InterfaceEnabled)
             s_container.style.display = DisplayStyle.Flex;
@@ -91,7 +104,14 @@ internal class DadUiController : KerbalMonoBehaviour
         _screen_height = Screen.resolvedStyle.height;
 
         // Update target data
-        target.Update(Game);
+        target.Update();
+
+        // Update flight controls mode indicator
+        //if (Game?.ViewController?.GetActiveSimVessel(true) != null)
+        //{
+        //    Vehicle.ActiveVesselVehicle.OnFlightControlsModeChange -= OnFlightControlsModeChanged;
+        //    Vehicle.ActiveVesselVehicle.OnFlightControlsModeChange += OnFlightControlsModeChanged;
+        //}
 
         if (target.IsValid)
         {
@@ -102,6 +122,7 @@ internal class DadUiController : KerbalMonoBehaviour
             UpdateMetrics(target.RelativePosition, target.RelativeVelocity, true);
             UpdateAngleCrosshair(target.RelativeOrientation, true);
             UpdateRollIndicator(target.RelativeRoll, true);
+            UpdateTvelIndicator(target.RelativeVelocity, true);
         }
         else
         {
@@ -112,6 +133,7 @@ internal class DadUiController : KerbalMonoBehaviour
             UpdateMetrics(Vector3.zero, Vector3.zero, false);
             UpdateAngleCrosshair(Vector3.zero, false);
             UpdateRollIndicator(0, false);
+            UpdateTvelIndicator(Vector3.zero, false);
         }
     }
 
@@ -163,6 +185,7 @@ internal class DadUiController : KerbalMonoBehaviour
         CvelLabel = s_container.Q<Label>("cvel");
         TofsLabel = s_container.Q<Label>("tofs");
         TvelLabel = s_container.Q<Label>("tvel");
+        //CtrlLabel = s_container.Q<Label>("ctrl-mode");
 
         // Main display
         Screen = s_container.Q<VisualElement>("screen");
@@ -183,12 +206,22 @@ internal class DadUiController : KerbalMonoBehaviour
         RotationMarker = s_container.Q<VisualElement>("rotation-marker");
         RotationMarkerSprite = s_container.Q<VisualElement>("rotation-marker-sprite");
 
+        // Tvel indicator
+        TvelMarker = s_container.Q<VisualElement>("tvel-marker");
+        TvelLine = s_container.Q<VisualElement>("tvel-line");
+        TvelArrow = s_container.Q<VisualElement>("tvel-arrow");
+
         // No Target error screen
         NoTargetScreen = s_container.Q<VisualElement>("no-target");
         NoTargetScreen.style.display = DisplayStyle.None;
 
         _initialized = true;
     }
+
+    //private void OnFlightControlsModeChanged(FlightControlsMode mode)
+    //{
+    //    CtrlLabel.text = "CTRL: " + (mode == FlightControlsMode.Docking ? "DOCKING" : "NORMAL");
+    //}
 
     /// <summary>
     /// Converts <c>value</c> to a 4-number string with 1 decimal point and correct unit prefix
@@ -281,6 +314,12 @@ internal class DadUiController : KerbalMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Moves the rotation indicator arrow based on the relative rotation between the current vessel's docking port
+    /// and the target docking port. The arrow is green is the angle is less that 5° and red otherwise.
+    /// </summary>
+    /// <param name="relativeRoll">Relative roll between the two docking ports</param>
+    /// <param name="validTarget"></param>
     private void UpdateRollIndicator(float relativeRoll, bool validTarget)
     {
         if (validTarget)
@@ -306,6 +345,46 @@ internal class DadUiController : KerbalMonoBehaviour
         else
         {
             RotationMarker.style.display = DisplayStyle.None;
+        }
+    }
+
+    /// <summary>
+    /// Moves the tangent velocity indicator arrow based on the relative velocity between the two crafts in the target's
+    /// docking port parallel frame.
+    /// </summary>
+    /// <param name="relativeVel">Relative velocity in the target parallel frame</param>
+    /// <param name="validTarget"></param>
+    private void UpdateTvelIndicator(Vector3 relativeVel, bool validTarget)
+    {
+        if (validTarget)
+        {
+            // Display indicator
+            TvelMarker.style.display = DisplayStyle.Flex;
+
+            // Tangent velocity vector
+            Vector2 tVel = new Vector2(relativeVel.x, -relativeVel.y);
+
+            // Magnitude
+            float mag = tVel.magnitude;
+
+            // Display indicator if magnitude > 10cm/s
+            // TvelMarker.style.display = mag > 0.1f ? DisplayStyle.Flex : DisplayStyle.None;
+
+            // Angle from vertical
+            Vector2 upVec = new Vector2(0, 1);
+            float angle = Vector2.SignedAngle(upVec, tVel);
+
+            // Rotate indicator
+            TvelMarker.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+            // Arrow length
+            float screenMag = (Mathf.Log10(Mathf.Clamp(mag, 0.1f, 990f)) + 1) / 8 * (_screen_height / 2);
+            TvelLine.style.height = screenMag;
+            TvelArrow.style.bottom = screenMag - 5;
+        }
+        else
+        {
+            TvelMarker.style.display = DisplayStyle.None;
         }
     }
 

@@ -1,6 +1,6 @@
 .root {
     min-width: 192px;
-    min-height: 231px;
+    min-height: 230px;
     width: 15%;
     height: 32%;
     background-color: rgb(0, 0, 0);
@@ -12,6 +12,10 @@
     padding-right: 6px;
     padding-top: 6px;
     padding-bottom: 6px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
 }
 
 .title {
@@ -79,7 +83,7 @@
 
 .screen {
     width: 100%;
-    height: 83%;
+    height: 83.4%;
     border-left-color: rgb(67, 70, 81);
     border-right-color: rgb(67, 70, 81);
     border-top-color: rgb(67, 70, 81);
@@ -96,10 +100,6 @@
     margin-bottom: 5px;
     align-items: center;
     justify-content: center;
-}
-
-.rel-info {
-    flex-wrap: wrap;
 }
 
 .rel-text {
@@ -254,4 +254,37 @@
 
 .tint-red {
     -unity-background-image-tint-color: rgb(209, 22, 13);
+}
+
+.tvel-marker {
+    position: absolute;
+    width: 0;
+    height: 0;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.tvel-line {
+    width: 1px;
+    height: 60px;
+    position: absolute;
+    left: 50%;
+    background-color: rgb(62, 152, 98);
+}
+
+.tvel-arrow {
+    background-image: url('/Assets/Images/rotation_marker.png');
+    width: 10px;
+    height: 10px;
+    -unity-background-image-tint-color: rgb(61, 152, 98);
+    position: absolute;
+}
+
+.rel-info {
+    align-items: auto;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+    margin-top: 1%;
 }

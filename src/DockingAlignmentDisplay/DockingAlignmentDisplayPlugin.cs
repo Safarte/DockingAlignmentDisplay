@@ -5,10 +5,10 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
+
 using BepInEx;
 using BepInEx.Logging;
 using JetBrains.Annotations;
-using KSP.UI.Binding;
 using SpaceWarp;
 using SpaceWarp.API.Assets;
 using SpaceWarp.API.Mods;
@@ -29,13 +29,13 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
     [PublicAPI] public const string ModGuid = MyPluginInfo.PLUGIN_GUID;
     [PublicAPI] public const string ModName = MyPluginInfo.PLUGIN_NAME;
     [PublicAPI] public const string ModVer = MyPluginInfo.PLUGIN_VERSION;
-
-    // AppBar button related stuff
-    public static bool InterfaceEnabled = false;
     public const string ToolbarFlightButtonID = "BTN-DockingAlignmentDisplayFlight";
 
+    // AppBar button related stuff
+    public static bool InterfaceEnabled;
+
     // UI controller
-    DadUiController uiController;
+    private DadUiController uiController;
 
     // Singleton instance of the plugin class
     public static DockingAlignmentDisplayPlugin Instance { get; set; }
@@ -44,7 +44,7 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
     public new static ManualLogSource Logger { get; set; }
 
     /// <summary>
-    /// Runs when the mod is first initialized.
+    ///     Runs when the mod is first initialized.
     /// </summary>
     public override void OnInitialized()
     {
@@ -54,7 +54,8 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
         Logger = base.Logger;
 
         // Load UITK GUI
-        var dadUxml = AssetManager.GetAsset<VisualTreeAsset>($"{Info.Metadata.GUID}/dad_ui/dockingalignmentdisplay.uxml");
+        var dadUxml =
+            AssetManager.GetAsset<VisualTreeAsset>($"{Info.Metadata.GUID}/dad_ui/dockingalignmentdisplay.uxml");
         var dadWindow = Window.CreateFromUxml(dadUxml, "Docking Alignment Display Main Window", transform, true);
         uiController = dadWindow.gameObject.AddComponent<DadUiController>();
 
@@ -63,20 +64,9 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
             "Docking Alignment",
             ToolbarFlightButtonID,
             AssetManager.GetAsset<Texture2D>($"{Info.Metadata.GUID}/images/icon.png"),
-            ToggleButton
+            uiController.SetEnabled
         );
 
         Instance = this;
-    }
-
-    /// <summary>
-    /// Callback for the mod's app bar button
-    /// </summary>
-    /// <param name="toggle"></param>
-    public void ToggleButton(bool toggle)
-    {
-        InterfaceEnabled = toggle;
-        GameObject.Find(ToolbarFlightButtonID)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(InterfaceEnabled);
-        uiController.SetEnabled(toggle);
     }
 }

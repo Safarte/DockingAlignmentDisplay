@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-using DockingAlignmentDisplay.Geometry;
+
 using KSP.Game;
 using KSP.UI.Binding;
 using UitkForKsp2.API;
@@ -15,61 +15,68 @@ using UnityEngine.UIElements;
 namespace DockingAlignmentDisplay;
 
 /// <summary>
-/// Docking Alignment Display UITK GUI controller
+///     Docking Alignment Display UITK GUI controller
 /// </summary>
 internal class DadUiController : KerbalMonoBehaviour
 {
-    // GUI Window
-    private static VisualElement s_container;
-    private bool _initialized = false;
-    public static bool GUIEnabled = true;
-
     // Color classes
-    string _red = "bg-red";
-    string _green = "bg-green";
-    string _gold = "bg-gold";
+    private const string Gold = "bg-gold";
+    private const string Green = "bg-green";
+    private const string Red = "bg-red";
+
+    // GUI Window
+    private static VisualElement _container;
+    private static bool _initialized;
 
     // Current Target
-    Target target = new Target();
+    private readonly Target _target = new();
 
-    // Close Button
-    Button CloseButton;
+    // Angle crosshair
+    private VisualElement _angleCrosshair;
+    private VisualElement _angleHori;
+    private VisualElement _angleVert;
 
     // Closing Distance
-    Label CdstLabel;
+    private Label _cdstLabel;
+
+    // Close Button
+    private Button _closeButton;
+
     // Closing Velocity
-    Label CvelLabel;
-    // Tangent Offset
-    Label TofsLabel;
-    // Tangent Velocity
-    Label TvelLabel;
+    private Label _cvelLabel;
+
+    // No Target error screen
+    private VisualElement _noTargetScreen;
+
+    // Rotation marker
+    private VisualElement _rotationMarker;
+    private VisualElement _rotationMarkerSprite;
+
+
     // Flight Controls Mode
     //Label CtrlLabel;
 
     // Main display
-    VisualElement Screen;
-    private float _screen_width;
-    private float _screen_height;
+    private VisualElement _screen;
+    private float _screenHeight;
+    private float _screenWidth;
 
-    // Error crosshairs
-    VisualElement TangentCrosshairHori;
-    VisualElement TangentCrosshairVert;
+    // Tangent crosshair
+    private VisualElement _tangentCrosshairHori;
+    private VisualElement _tangentCrosshairVert;
 
-    VisualElement AngleCrosshair;
-    VisualElement AngleHori;
-    VisualElement AngleVert;
-
-    // Rotation marker
-    VisualElement RotationMarker;
-    VisualElement RotationMarkerSprite;
+    // Tangent Offset
+    private Label _tofsLabel;
 
     // Tangent velocity marker
-    VisualElement TvelMarker;
-    VisualElement TvelLine;
-    VisualElement TvelArrow;
+    private VisualElement _tvelArrow;
 
-    // No Target error screen
-    VisualElement NoTargetScreen;
+    // Tangent Velocity
+    private Label _tvelLabel;
+    private VisualElement _tvelLine;
+    private VisualElement _tvelMarker;
+
+    private bool _uiEnabled;
 
     private void Start()
     {
@@ -78,33 +85,22 @@ internal class DadUiController : KerbalMonoBehaviour
 
     private void Update()
     {
-        if (!_initialized)
-        {
-            InitElements();
-            return;
-        }
+        if (!_initialized) InitElements();
+
+        if (!_uiEnabled || GameManager.Instance.Game is null) return;
+
+        // Close UI on ESC key press
+        if (_uiEnabled && Input.GetKey(KeyCode.Escape)) SetEnabled(false);
 
         // Close UI if not controlling a vessel
-        if (Game?.ViewController?.GetActiveSimVessel(true) is null)
-        {
-            DockingAlignmentDisplayPlugin.Instance.ToggleButton(false);
-        }
-
-        // Update GUI display status
-        if (GUIEnabled && DockingAlignmentDisplayPlugin.InterfaceEnabled)
-            s_container.style.display = DisplayStyle.Flex;
-        else
-        {
-            s_container.style.display = DisplayStyle.None;
-            return;
-        }
+        if (Game.ViewController?.GetActiveSimVessel() is null) SetEnabled(false);
 
         // Update screen dimensions
-        _screen_width = Screen.resolvedStyle.width;
-        _screen_height = Screen.resolvedStyle.height;
+        _screenWidth = _screen.resolvedStyle.width;
+        _screenHeight = _screen.resolvedStyle.height;
 
         // Update target data
-        target.Update();
+        _target.Update();
 
         // Update flight controls mode indicator
         //if (Game?.ViewController?.GetActiveSimVessel(true) != null)
@@ -113,40 +109,34 @@ internal class DadUiController : KerbalMonoBehaviour
         //    Vehicle.ActiveVesselVehicle.OnFlightControlsModeChange += OnFlightControlsModeChanged;
         //}
 
-        if (target.IsValid)
+        if (_target.IsValid)
         {
             // Hide "No Target" screen
-            NoTargetScreen.style.display = DisplayStyle.None;
+            _noTargetScreen.style.display = DisplayStyle.None;
 
-            UpdateTangentCrosshair(target.RelativePosition, true);
-            UpdateMetrics(target.RelativePosition, target.RelativeVelocity, true);
-            UpdateAngleCrosshair(target.RelativeOrientation, true);
-            UpdateRollIndicator(target.RelativeRoll, true);
-            UpdateTvelIndicator(target.RelativeVelocity, true);
+            UpdateTangentCrosshair(_target.RelativePosition);
+            UpdateAngleCrosshair(_target.RelativeOrientation);
+            UpdateRollIndicator(_target.RelativeRoll);
+            UpdateTvelIndicator(_target.RelativeVelocity);
+            UpdateMetrics(_target.RelativePosition, _target.RelativeVelocity, true);
         }
         else
         {
             // Show "No Target" screen
-            NoTargetScreen.style.display = DisplayStyle.Flex;
+            _noTargetScreen.style.display = DisplayStyle.Flex;
 
-            UpdateTangentCrosshair(Vector3.zero, false);
             UpdateMetrics(Vector3.zero, Vector3.zero, false);
-            UpdateAngleCrosshair(Vector3.zero, false);
-            UpdateRollIndicator(0, false);
-            UpdateTvelIndicator(Vector3.zero, false);
         }
     }
 
     public void SetEnabled(bool newState)
     {
-        if (newState)
-        {
-            s_container.style.display = DisplayStyle.Flex;
-        }
-        else s_container.style.display = DisplayStyle.None;
+        _uiEnabled = newState;
+        _container.style.display = newState ? DisplayStyle.Flex : DisplayStyle.None;
 
         // Update toolbar button
-        GameObject.Find(DockingAlignmentDisplayPlugin.ToolbarFlightButtonID)?.GetComponent<UIValue_WriteBool_Toggle>()?.SetValue(newState);
+        GameObject.Find(DockingAlignmentDisplayPlugin.ToolbarFlightButtonID)?.GetComponent<UIValue_WriteBool_Toggle>()
+            ?.SetValue(newState);
     }
 
     private void SetupDocument()
@@ -155,65 +145,61 @@ internal class DadUiController : KerbalMonoBehaviour
 
         // Set up localization
         if (document.TryGetComponent<DocumentLocalization>(out var localization))
-        {
             localization.Localize();
-        }
         else
-        {
             document.EnableLocalization();
-        }
 
         // root Visual Element
-        s_container = document.rootVisualElement;
+        _container = document.rootVisualElement;
 
         // Move the GUI to its starting position
-        s_container[0].transform.position = new Vector2(500, 50);
-        s_container[0].CenterByDefault();
+        _container[0].transform.position = new Vector2(500, 50);
+        _container[0].CenterByDefault();
 
         // Hide the GUI by default
-        s_container.style.display = DisplayStyle.None;
+        _container.style.display = DisplayStyle.None;
     }
 
     private void InitElements()
     {
         // Close Button
-        CloseButton = s_container.Q<Button>("close-button");
-        CloseButton.clicked += () => DockingAlignmentDisplayPlugin.Instance.ToggleButton(false);
+        _closeButton = _container.Q<Button>("close-button");
+        _closeButton.clicked += () => SetEnabled(false);
 
         // Labels
-        CdstLabel = s_container.Q<Label>("cdst");
-        CvelLabel = s_container.Q<Label>("cvel");
-        TofsLabel = s_container.Q<Label>("tofs");
-        TvelLabel = s_container.Q<Label>("tvel");
+        _cdstLabel = _container.Q<Label>("cdst");
+        _cvelLabel = _container.Q<Label>("cvel");
+        _tofsLabel = _container.Q<Label>("tofs");
+        _tvelLabel = _container.Q<Label>("tvel");
         //CtrlLabel = s_container.Q<Label>("ctrl-mode");
 
         // Main display
-        Screen = s_container.Q<VisualElement>("screen");
-        _screen_width = Screen.resolvedStyle.width;
-        _screen_height = Screen.resolvedStyle.height;
+        _screen = _container.Q<VisualElement>("screen");
+        _screenWidth = _screen.resolvedStyle.width;
+        _screenHeight = _screen.resolvedStyle.height;
 
         // Error crosshairs
-        TangentCrosshairHori = s_container.Q<VisualElement>("tangent-hori");
-        TangentCrosshairVert = s_container.Q<VisualElement>("tangent-vert");
-        AngleCrosshair = s_container.Q<VisualElement>("angle-cross");
-        AngleHori = s_container.Q<VisualElement>("angle-hori");
-        AngleVert = s_container.Q<VisualElement>("angle-vert");
+        _tangentCrosshairHori = _container.Q<VisualElement>("tangent-hori");
+        _tangentCrosshairVert = _container.Q<VisualElement>("tangent-vert");
+        _angleCrosshair = _container.Q<VisualElement>("angle-cross");
+        _angleHori = _container.Q<VisualElement>("angle-hori");
+        _angleVert = _container.Q<VisualElement>("angle-vert");
 
         // Rotate Angle crosshair
-        AngleCrosshair.transform.rotation = Quaternion.AngleAxis(45, Vector3.forward);
+        _angleCrosshair.transform.rotation = Quaternion.AngleAxis(45, Vector3.forward);
 
         // Rotation marker
-        RotationMarker = s_container.Q<VisualElement>("rotation-marker");
-        RotationMarkerSprite = s_container.Q<VisualElement>("rotation-marker-sprite");
+        _rotationMarker = _container.Q<VisualElement>("rotation-marker");
+        _rotationMarkerSprite = _container.Q<VisualElement>("rotation-marker-sprite");
 
         // Tvel indicator
-        TvelMarker = s_container.Q<VisualElement>("tvel-marker");
-        TvelLine = s_container.Q<VisualElement>("tvel-line");
-        TvelArrow = s_container.Q<VisualElement>("tvel-arrow");
+        _tvelMarker = _container.Q<VisualElement>("tvel-marker");
+        _tvelLine = _container.Q<VisualElement>("tvel-line");
+        _tvelArrow = _container.Q<VisualElement>("tvel-arrow");
 
         // No Target error screen
-        NoTargetScreen = s_container.Q<VisualElement>("no-target");
-        NoTargetScreen.style.display = DisplayStyle.None;
+        _noTargetScreen = _container.Q<VisualElement>("no-target");
+        _noTargetScreen.style.display = DisplayStyle.None;
 
         _initialized = true;
     }
@@ -224,15 +210,15 @@ internal class DadUiController : KerbalMonoBehaviour
     //}
 
     /// <summary>
-    /// Converts <c>value</c> to a 4-number string with 1 decimal point and correct unit prefix
+    ///     Converts <c>value</c> to a 4-number string with 1 decimal point and correct unit prefix
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    private string ToDisplay(double value)
+    private static string ToDisplay(double value)
     {
         var exponent = Math.Log10(Math.Abs(value));
 
-        List<string> unitPrefixes = new List<string> { "", "k", "M" };
+        var unitPrefixes = new List<string> { "", "k", "M" };
         var prefixIndex = (int)Math.Floor(exponent / 3);
         var prefix = exponent < 0 ? "c" : unitPrefixes[prefixIndex];
 
@@ -242,154 +228,128 @@ internal class DadUiController : KerbalMonoBehaviour
     }
 
     /// <summary>
-    /// Moves the tangent error crosshair to the specified position on the screen.
-    /// If the (x,y) error is larger than 100m, draw the crosshair at the edge of the screen.
-    /// Set the crosshair's color to red if positionError.z < 0 (the craft is behind the target docking port).
+    ///     Moves the tangent error crosshair to the specified position on the screen.
+    ///     If the (x,y) error is larger than 100m, draw the crosshair at the edge of the screen.
+    ///     Set the crosshair's color to red if positionError.z &lt; 0 (the craft is behind the target docking port).
     /// </summary>
     /// <param name="relativePos">Relative position in the target parallel frame</param>
-    private void UpdateTangentCrosshair(Vector3 relativePos, bool validTarget)
+    /// <param name="validTarget">Is the target valid</param>
+    private void UpdateTangentCrosshair(Vector3 relativePos)
     {
-        if (validTarget)
-        {
-            // Display crosshair
-            TangentCrosshairHori.style.display = DisplayStyle.Flex;
-            TangentCrosshairVert.style.display = DisplayStyle.Flex;
+        // Display crosshair
+        _tangentCrosshairHori.style.display = DisplayStyle.Flex;
+        _tangentCrosshairVert.style.display = DisplayStyle.Flex;
 
-            // Update color according to course distance (z position error)
-            TangentCrosshairHori.EnableInClassList(_green, relativePos.z > 0);
-            TangentCrosshairVert.EnableInClassList(_green, relativePos.z > 0);
-            TangentCrosshairHori.EnableInClassList(_red, relativePos.z <= 0);
-            TangentCrosshairVert.EnableInClassList(_red, relativePos.z <= 0);
+        // Update color according to course distance (z position error)
+        _tangentCrosshairHori.EnableInClassList(Green, relativePos.z > 0);
+        _tangentCrosshairVert.EnableInClassList(Green, relativePos.z > 0);
+        _tangentCrosshairHori.EnableInClassList(Red, relativePos.z <= 0);
+        _tangentCrosshairVert.EnableInClassList(Red, relativePos.z <= 0);
 
-            // Convert xy error to screen coordinates with log scale
-            var screenX = Mathf.Sign(relativePos.x) * _screen_width * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.x), 0.1f, 990f)) + 1) / 8;
-            var screenY = Mathf.Sign(relativePos.y) * _screen_height * (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.y), 0.1f, 990f)) + 1) / 8;
+        // Convert xy error to screen coordinates with log scale
+        var screenX = Mathf.Sign(relativePos.x) * _screenWidth *
+            (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.x), 0.1f, 990f)) + 1) / 8;
+        var screenY = Mathf.Sign(relativePos.y) * _screenHeight *
+            (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.y), 0.1f, 990f)) + 1) / 8;
 
-            // Move crosshair to desired position
-            TangentCrosshairHori.transform.position = new Vector3(0, -screenY);
-            TangentCrosshairVert.transform.position = new Vector3(screenX, 0);
-        }
-        else
-        {
-            // Hide crosshair
-            TangentCrosshairHori.style.display = DisplayStyle.None;
-            TangentCrosshairVert.style.display = DisplayStyle.None;
-        }
+        // Move crosshair to desired position
+        _tangentCrosshairHori.transform.position = new Vector3(0, -screenY);
+        _tangentCrosshairVert.transform.position = new Vector3(screenX, 0);
     }
 
     /// <summary>
-    /// Moves the angle error crosshair to the required position on the screen based on the relative orientation.
-    /// If the angle error is larger than 40°, draw the crosshair at the edge of the screen.
-    /// Set the crosshair's color to red if the docking port is pointed away from the target.
+    ///     Moves the angle error crosshair to the required position on the screen based on the relative orientation.
+    ///     If the angle error is larger than 40°, draw the crosshair at the edge of the screen.
+    ///     Set the crosshair's color to red if the docking port is pointed away from the target.
     /// </summary>
     /// <param name="relativeOrientation">Relative orientation (docking port's "up" in the parallel frame)</param>
     /// <param name="validTarget"></param>
-    private void UpdateAngleCrosshair(Vector3 relativeOrientation, bool validTarget)
+    private void UpdateAngleCrosshair(Vector3 relativeOrientation)
     {
-        if (validTarget)
-        {
-            // Display crosshair
-            AngleCrosshair.style.display = DisplayStyle.Flex;
+        // Display crosshair
+        _angleCrosshair.style.display = DisplayStyle.Flex;
 
-            // Adjust crosshair size
-            AngleHori.style.width = new StyleLength(0.3f * _screen_width);
-            AngleVert.style.height = new StyleLength(0.3f * _screen_height);
+        // Adjust crosshair size
+        _angleHori.style.width = new StyleLength(0.3f * _screenWidth);
+        _angleVert.style.height = new StyleLength(0.3f * _screenHeight);
 
-            // Update color based on if we are pointed toward or away from the target port
-            AngleHori.EnableInClassList(_gold, relativeOrientation.z < 0);
-            AngleVert.EnableInClassList(_gold, relativeOrientation.z < 0);
-            AngleHori.EnableInClassList(_red, relativeOrientation.z >= 0);
-            AngleVert.EnableInClassList(_red, relativeOrientation.z >= 0);
+        // Update color based on if we are pointed toward or away from the target port
+        _angleHori.EnableInClassList(Gold, relativeOrientation.z < 0);
+        _angleVert.EnableInClassList(Gold, relativeOrientation.z < 0);
+        _angleHori.EnableInClassList(Red, relativeOrientation.z >= 0);
+        _angleVert.EnableInClassList(Red, relativeOrientation.z >= 0);
 
-            // Error to screen position
-            var screenX = Mathf.Clamp(90 / 40 * Mathf.Asin(-relativeOrientation.x) * 2 / Mathf.PI, -0.99f, 0.99f);
-            var screenY = Mathf.Clamp(90 / 40 * Mathf.Asin(-relativeOrientation.y) * 2 / Mathf.PI, -0.99f, 0.99f);
+        // Error to screen position
+        var screenX = Mathf.Clamp(2.25F * Mathf.Asin(-relativeOrientation.x) * 2 / Mathf.PI, -0.99f, 0.99f);
+        var screenY = Mathf.Clamp(2.25F * Mathf.Asin(-relativeOrientation.y) * 2 / Mathf.PI, -0.99f, 0.99f);
 
-            // Move crosshair to desired position
-            AngleCrosshair.transform.position = new Vector3(_screen_width * screenX / 2, _screen_height * screenY / 2);
-        }
-        else
-        {
-            AngleCrosshair.style.display = DisplayStyle.None;
-        }
+        // Move crosshair to desired position
+        _angleCrosshair.transform.position = new Vector3(_screenWidth * screenX / 2, _screenHeight * screenY / 2);
     }
 
     /// <summary>
-    /// Moves the rotation indicator arrow based on the relative rotation between the current vessel's docking port
-    /// and the target docking port. The arrow is green is the angle is less that 5° and red otherwise.
+    ///     Moves the rotation indicator arrow based on the relative rotation between the current vessel's docking port
+    ///     and the target docking port. The arrow is green is the angle is less that 5° and red otherwise.
     /// </summary>
     /// <param name="relativeRoll">Relative roll between the two docking ports</param>
     /// <param name="validTarget"></param>
-    private void UpdateRollIndicator(float relativeRoll, bool validTarget)
+    private void UpdateRollIndicator(float relativeRoll)
     {
-        if (validTarget)
-        {
-            // Display indicator
-            RotationMarker.style.display = DisplayStyle.Flex;
+        // Display indicator
+        _rotationMarker.style.display = DisplayStyle.Flex;
 
-            // Color
-            var rollDeg = Mathf.Abs(relativeRoll * Mathf.Rad2Deg);
-            RotationMarkerSprite.EnableInClassList("tint-green", rollDeg <= 5);
-            RotationMarkerSprite.EnableInClassList("tint-red", rollDeg > 5);
+        // Color
+        var rollDeg = Mathf.Abs(relativeRoll * Mathf.Rad2Deg);
+        _rotationMarkerSprite.EnableInClassList("tint-green", rollDeg <= 5);
+        _rotationMarkerSprite.EnableInClassList("tint-red", rollDeg > 5);
 
-            // Screen position
-            var screenX = 0.98f * Mathf.Sin(relativeRoll) * _screen_width / 2;
-            var screenY = -0.98f * Mathf.Cos(relativeRoll) * _screen_height / 2;
+        // Screen position
+        var screenX = 0.98f * Mathf.Sin(relativeRoll) * _screenWidth / 2;
+        var screenY = -0.98f * Mathf.Cos(relativeRoll) * _screenHeight / 2;
 
-            // Rotate indicator
-            RotationMarker.transform.rotation = Quaternion.AngleAxis(Mathf.Rad2Deg * relativeRoll, Vector3.forward);
+        // Rotate indicator
+        _rotationMarker.transform.rotation = Quaternion.AngleAxis(Mathf.Rad2Deg * relativeRoll, Vector3.forward);
 
-            // Translate indicator
-            RotationMarker.transform.position = new Vector3(screenX, screenY);
-        }
-        else
-        {
-            RotationMarker.style.display = DisplayStyle.None;
-        }
+        // Translate indicator
+        _rotationMarker.transform.position = new Vector3(screenX, screenY);
     }
 
     /// <summary>
-    /// Moves the tangent velocity indicator arrow based on the relative velocity between the two crafts in the target's
-    /// docking port parallel frame.
+    ///     Moves the tangent velocity indicator arrow based on the relative velocity between the two crafts in the target's
+    ///     docking port parallel frame.
     /// </summary>
     /// <param name="relativeVel">Relative velocity in the target parallel frame</param>
     /// <param name="validTarget"></param>
-    private void UpdateTvelIndicator(Vector3 relativeVel, bool validTarget)
+    private void UpdateTvelIndicator(Vector3 relativeVel)
     {
-        if (validTarget)
-        {
-            // Display indicator
-            TvelMarker.style.display = DisplayStyle.Flex;
+        // Display indicator
+        _tvelMarker.style.display = DisplayStyle.Flex;
 
-            // Tangent velocity vector
-            Vector2 tVel = new Vector2(relativeVel.x, -relativeVel.y);
+        // Tangent velocity vector
+        var tVel = new Vector2(relativeVel.x, -relativeVel.y);
 
-            // Magnitude
-            float mag = tVel.magnitude;
+        // Magnitude
+        var mag = tVel.magnitude;
 
-            // Display indicator if magnitude > 10cm/s
-            // TvelMarker.style.display = mag > 0.1f ? DisplayStyle.Flex : DisplayStyle.None;
+        // Display indicator if magnitude > 10cm/s
+        // TvelMarker.style.display = mag > 0.1f ? DisplayStyle.Flex : DisplayStyle.None;
 
-            // Angle from vertical
-            Vector2 upVec = new Vector2(0, 1);
-            float angle = Vector2.SignedAngle(upVec, tVel);
+        // Angle from vertical
+        var upVec = new Vector2(0, 1);
+        var angle = Vector2.SignedAngle(upVec, tVel);
 
-            // Rotate indicator
-            TvelMarker.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        // Rotate indicator
+        _tvelMarker.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-            // Arrow length
-            float screenMag = (Mathf.Log10(Mathf.Clamp(mag, 0.1f, 990f)) + 1) / 8 * (_screen_height / 2);
-            TvelLine.style.height = screenMag;
-            TvelArrow.style.bottom = screenMag - 5;
-        }
-        else
-        {
-            TvelMarker.style.display = DisplayStyle.None;
-        }
+        // Arrow length
+        var screenMag = (Mathf.Log10(Mathf.Clamp(mag, 0.1f, 990f)) + 1) / 8 * (_screenHeight / 2);
+        _tvelLine.style.height = screenMag;
+        _tvelArrow.style.bottom = screenMag - 5;
     }
 
     /// <summary>
-    /// Updates the numerical metrics that represent: course distance, course velocity, tangent offset and tangent velocity.
+    ///     Updates the numerical metrics that represent: course distance, course velocity, tangent offset and tangent
+    ///     velocity.
     /// </summary>
     /// <param name="relativePos">Relative position in the target parallel frame</param>
     /// <param name="relativeVel">Relative velocity in the target parallel frame</param>
@@ -405,19 +365,19 @@ internal class DadUiController : KerbalMonoBehaviour
             var tVel = new Vector2(relativeVel.x, relativeVel.y).magnitude;
 
             // Update UI text
-            CdstLabel.text = $"CDST:{ToDisplay(cDst)}m";
-            CvelLabel.text = $"CVEL:{ToDisplay(cVel)}m/s";
-            TofsLabel.text = $"TOFS:{ToDisplay(tOfs)}m";
-            TvelLabel.text = $"TVEL:{ToDisplay(tVel)}m/s";
+            _cdstLabel.text = $"CDST:{ToDisplay(cDst)}m";
+            _cvelLabel.text = $"CVEL:{ToDisplay(cVel)}m/s";
+            _tofsLabel.text = $"TOFS:{ToDisplay(tOfs)}m";
+            _tvelLabel.text = $"TVEL:{ToDisplay(tVel)}m/s";
         }
         else
         {
             // Update UI text metrics with "N/A"
-            string na = "N/A ";
-            CdstLabel.text = $"CDST:{na,7}m";
-            CvelLabel.text = $"CVEL:{na,7}m/s";
-            TofsLabel.text = $"TOFS:{na,7}m";
-            TvelLabel.text = $"TVEL:{na,7}m/s";
+            const string na = "N/A ";
+            _cdstLabel.text = $"CDST:{na,7}m";
+            _cvelLabel.text = $"CVEL:{na,7}m/s";
+            _tofsLabel.text = $"TOFS:{na,7}m";
+            _tvelLabel.text = $"TVEL:{na,7}m/s";
         }
     }
 }

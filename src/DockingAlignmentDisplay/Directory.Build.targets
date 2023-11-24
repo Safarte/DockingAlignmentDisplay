@@ -6,7 +6,7 @@
         <MakeDir Directories="$(SolutionDir)/dist/$(ConfigurationName)/BepInEx/plugins/$(ProjectName)"/>
 
         <ItemGroup Label="Plugin template folder to be copied">
-            <PluginTemplate Include="$(SolutionDir)/docking_alignment_display/**/*.*"/>
+            <PluginTemplate Include="$(SolutionDir)/plugin_template/**/*.*"/>
         </ItemGroup>
         <Message Text="Copying plugin folder to build directory"/>
         <Copy SourceFiles="@(PluginTemplate)"

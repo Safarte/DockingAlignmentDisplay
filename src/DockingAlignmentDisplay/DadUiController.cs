@@ -52,10 +52,6 @@ internal class DadUiController : KerbalMonoBehaviour
     private VisualElement _rotationMarker;
     private VisualElement _rotationMarkerSprite;
 
-
-    // Flight Controls Mode
-    //Label CtrlLabel;
-
     // Main display
     private VisualElement _screen;
     private float _screenHeight;
@@ -64,6 +60,10 @@ internal class DadUiController : KerbalMonoBehaviour
     // Tangent crosshair
     private VisualElement _tangentCrosshairHori;
     private VisualElement _tangentCrosshairVert;
+
+    // Tangent scale
+    private Label _tangentScale;
+    private Label[] _tangentTicks;
 
     // Tangent Offset
     private Label _tofsLabel;
@@ -102,12 +102,19 @@ internal class DadUiController : KerbalMonoBehaviour
         // Update target data
         _target.Update();
 
-        // Update flight controls mode indicator
-        //if (Game?.ViewController?.GetActiveSimVessel(true) != null)
-        //{
-        //    Vehicle.ActiveVesselVehicle.OnFlightControlsModeChange -= OnFlightControlsModeChanged;
-        //    Vehicle.ActiveVesselVehicle.OnFlightControlsModeChange += OnFlightControlsModeChanged;
-        //}
+        // Update tangent scale
+        if (DockingAlignmentDisplayPlugin.Instance.DockingTangentOffsetScale.Value == "Linear")
+        {
+            _tangentScale.text = "m";
+            for (var i = 0; i < 4; i++)
+                _tangentTicks[i].text = (10 * (1 + i)).ToString();
+        }
+        else
+        {
+            _tangentScale.text = "10^x m";
+            for (var i = 0; i < 4; i++)
+                _tangentTicks[i].text = i.ToString();
+        }
 
         if (_target.IsValid)
         {
@@ -185,6 +192,12 @@ internal class DadUiController : KerbalMonoBehaviour
         _angleHori = _container.Q<VisualElement>("angle-hori");
         _angleVert = _container.Q<VisualElement>("angle-vert");
 
+        // Tangent scale
+        _tangentScale = _container.Q<Label>("tangent-scale");
+        _tangentTicks = new Label[4];
+        for (var i = 0; i < 4; i++)
+            _tangentTicks[i] = _container.Q<Label>($"tangent{i}");
+
         // Rotate Angle crosshair
         _angleCrosshair.transform.rotation = Quaternion.AngleAxis(45, Vector3.forward);
 
@@ -233,7 +246,6 @@ internal class DadUiController : KerbalMonoBehaviour
     ///     Set the crosshair's color to red if positionError.z &lt; 0 (the craft is behind the target docking port).
     /// </summary>
     /// <param name="relativePos">Relative position in the target parallel frame</param>
-    /// <param name="validTarget">Is the target valid</param>
     private void UpdateTangentCrosshair(Vector3 relativePos)
     {
         // Display crosshair
@@ -246,11 +258,20 @@ internal class DadUiController : KerbalMonoBehaviour
         _tangentCrosshairHori.EnableInClassList(Red, relativePos.z <= 0);
         _tangentCrosshairVert.EnableInClassList(Red, relativePos.z <= 0);
 
+        float screenX, screenY;
         // Convert xy error to screen coordinates with log scale
-        var screenX = Mathf.Sign(relativePos.x) * _screenWidth *
-            (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.x), 0.1f, 990f)) + 1) / 8;
-        var screenY = Mathf.Sign(relativePos.y) * _screenHeight *
-            (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.y), 0.1f, 990f)) + 1) / 8;
+        if (DockingAlignmentDisplayPlugin.Instance.DockingTangentOffsetScale.Value == "Linear")
+        {
+            screenX = Mathf.Clamp(relativePos.x, -39f, 39f) / 40f * (_screenWidth / 2);
+            screenY = Mathf.Clamp(relativePos.y, -39f, 39f) / 40f * (_screenHeight / 2);
+        }
+        else
+        {
+            screenX = Mathf.Sign(relativePos.x) *
+                (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.x), 0.1f, 990f)) + 1) / 4 * (_screenWidth / 2);
+            screenY = Mathf.Sign(relativePos.y) *
+                (Mathf.Log10(Mathf.Clamp(Mathf.Abs(relativePos.y), 0.1f, 990f)) + 1) / 4 * (_screenHeight / 2);
+        }
 
         // Move crosshair to desired position
         _tangentCrosshairHori.transform.position = new Vector3(0, -screenY);
@@ -263,7 +284,6 @@ internal class DadUiController : KerbalMonoBehaviour
     ///     Set the crosshair's color to red if the docking port is pointed away from the target.
     /// </summary>
     /// <param name="relativeOrientation">Relative orientation (docking port's "up" in the parallel frame)</param>
-    /// <param name="validTarget"></param>
     private void UpdateAngleCrosshair(Vector3 relativeOrientation)
     {
         // Display crosshair
@@ -292,7 +312,6 @@ internal class DadUiController : KerbalMonoBehaviour
     ///     and the target docking port. The arrow is green is the angle is less that 5° and red otherwise.
     /// </summary>
     /// <param name="relativeRoll">Relative roll between the two docking ports</param>
-    /// <param name="validTarget"></param>
     private void UpdateRollIndicator(float relativeRoll)
     {
         // Display indicator
@@ -319,7 +338,6 @@ internal class DadUiController : KerbalMonoBehaviour
     ///     docking port parallel frame.
     /// </summary>
     /// <param name="relativeVel">Relative velocity in the target parallel frame</param>
-    /// <param name="validTarget"></param>
     private void UpdateTvelIndicator(Vector3 relativeVel)
     {
         // Display indicator
@@ -342,7 +360,13 @@ internal class DadUiController : KerbalMonoBehaviour
         _tvelMarker.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         // Arrow length
-        var screenMag = (Mathf.Log10(Mathf.Clamp(mag, 0.1f, 990f)) + 1) / 8 * (_screenHeight / 2);
+        float screenMag;
+        // Convert xy error to screen coordinates with log scale
+        if (DockingAlignmentDisplayPlugin.Instance.DockingTangentOffsetScale.Value == "Linear")
+            screenMag = Mathf.Clamp(mag, -39f, 39f) / 40f * (_screenHeight / 2);
+        else
+            screenMag = (Mathf.Log10(Mathf.Clamp(mag, 0.1f, 990f)) + 1) / 4 * (_screenHeight / 2);
+
         _tvelLine.style.height = screenMag;
         _tvelArrow.style.bottom = screenMag - 5;
     }

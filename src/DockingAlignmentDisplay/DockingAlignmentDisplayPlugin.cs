@@ -7,7 +7,7 @@
  */
 
 using BepInEx;
-using BepInEx.Logging;
+using BepInEx.Configuration;
 using JetBrains.Annotations;
 using SpaceWarp;
 using SpaceWarp.API.Assets;
@@ -35,13 +35,13 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
     public static bool InterfaceEnabled;
 
     // UI controller
-    private DadUiController uiController;
+    private DadUiController _uiController;
+
+    // Config
+    internal ConfigEntry<string> DockingTangentOffsetScale;
 
     // Singleton instance of the plugin class
-    public static DockingAlignmentDisplayPlugin Instance { get; set; }
-
-    // Logger
-    public new static ManualLogSource Logger { get; set; }
+    public static DockingAlignmentDisplayPlugin Instance { get; private set; }
 
     /// <summary>
     ///     Runs when the mod is first initialized.
@@ -49,22 +49,25 @@ public class DockingAlignmentDisplayPlugin : BaseSpaceWarpPlugin
     public override void OnInitialized()
     {
         base.OnInitialized();
+        Instance = this;
 
-        // Logger
-        Logger = base.Logger;
+        // Configuration
+        DockingTangentOffsetScale = Config.Bind("Docking Alignment Display", "Docking Tangent Scale", "Linear",
+            new ConfigDescription("The scaling of the docking tangent offset & velocity indicator crosshair",
+                new AcceptableValueList<string>("Linear", "Log")));
 
         // Load UITK GUI
         var dadUxml =
             AssetManager.GetAsset<VisualTreeAsset>($"{Info.Metadata.GUID}/dad_ui/dockingalignmentdisplay.uxml");
         var dadWindow = Window.CreateFromUxml(dadUxml, "Docking Alignment Display Main Window", transform, true);
-        uiController = dadWindow.gameObject.AddComponent<DadUiController>();
+        _uiController = dadWindow.gameObject.AddComponent<DadUiController>();
 
         // Add AppBar button
         Appbar.RegisterAppButton(
             "Docking Alignment",
             ToolbarFlightButtonID,
             AssetManager.GetAsset<Texture2D>($"{Info.Metadata.GUID}/images/icon.png"),
-            uiController.SetEnabled
+            _uiController.SetEnabled
         );
 
         Instance = this;

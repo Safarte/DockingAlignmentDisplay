@@ -5,7 +5,7 @@
   "name": "Docking Alignment Display",
   "description": "Adds a new instrument providing necessary information to dock with precision.",
   "source": "https://github.com/Safarte/DockingAlignmentDisplay",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "version_check": "https://raw.githubusercontent.com/Safarte/DockingAlignmentDisplay/main/docking_alignment_display/swinfo.json",
   "ksp2_version": {
     "min": "0.1.5",

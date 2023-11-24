@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="DockingAlignmentDisplay.uss" />
+    <Style src="project://database/Assets/DockingAlignmentDisplay.uss?fileID=7433441132597879392&amp;guid=57166329bf8e7cb4a8f9489e73e66b56&amp;type=3#DockingAlignmentDisplay" />
     <ui:VisualElement name="root" class="root">
         <ui:Label text="DOCKING-ALIGNMENT" display-tooltip-when-elided="true" name="title" class="title" />
         <ui:Button display-tooltip-when-elided="true" text="×" name="close-button" enable-rich-text="true" class="close-button" />
@@ -14,7 +14,7 @@
             <ui:Label text="0" display-tooltip-when-elided="true" name="tangent0" class="tangent-text" style="position: absolute; left: 57%; flex-direction: column; top: 51%;" />
             <ui:Label text="1" display-tooltip-when-elided="true" name="tangent1" class="tangent-text" style="position: absolute; left: 70%; top: 51%;" />
             <ui:Label text="2" display-tooltip-when-elided="true" name="tangent2" class="tangent-text" style="position: absolute; left: 83%; top: 51%;" />
-            <ui:Label text="3" display-tooltip-when-elided="true" name="tangent3" class="tangent-text" style="position: absolute; left: 96%; top: 51%;" />
+            <ui:Label text="3" display-tooltip-when-elided="true" name="tangent3" class="tangent-text" style="position: absolute; top: 51%; right: 1%;" />
             <ui:Label text="10°" display-tooltip-when-elided="true" name="angle-10" class="angle-text" style="position: absolute; left: 52%; flex-direction: column; top: 32%;" />
             <ui:Label text="20°" display-tooltip-when-elided="true" name="angle-20" class="angle-text" style="position: absolute; left: 52%; top: 20%;" />
             <ui:Label text="30°" display-tooltip-when-elided="true" name="angle-30" class="angle-text" style="position: absolute; left: 52%; top: 8%;" />

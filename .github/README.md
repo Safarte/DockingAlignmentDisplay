@@ -22,7 +22,7 @@ Inspired by the great [Docking Port Alignment Indicator](https://spacedock.info/
 - [x] Basic docking informations: tangent offset, misalignment, basic metrics
 - [x] Relative rotation indicator
 - [x] Relative velocity indicator
-- [ ] Setting to toggle between linear and log scale for the offset indicator
+- [x] Setting to toggle between linear and log scale for the offset indicator
 - [ ] Docking Mode indicator
 - [ ] Simple selector for nearby docking ports to target
 

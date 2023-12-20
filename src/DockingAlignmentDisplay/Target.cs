@@ -40,7 +40,7 @@ internal class Target
         get
         {
             // Center of own vessel and of target part
-            var center = _activeVessel.controlTransform.Position;
+            var center = _activeVessel.ControlTransform.Position;
             var targetCenter = _currentTarget.transform.Position;
 
             // Convert to target's frame of reference
@@ -92,7 +92,7 @@ internal class Target
         get
         {
             // Docking port "up" vector
-            var up = _activeVessel.controlTransform.up;
+            var up = _activeVessel.ControlTransform.up;
 
             // Convert to target's frame of reference
             var localUp = _targetFrame.ToLocalVector(up);
@@ -113,7 +113,7 @@ internal class Target
         get
         {
             // Docking port "up" vector
-            var fwd = _activeVessel.controlTransform.forward;
+            var fwd = _activeVessel.ControlTransform.forward;
 
             // Convert to target's frame of reference
             var localFwd = _targetFrame.ToLocalVector(fwd).normalized;

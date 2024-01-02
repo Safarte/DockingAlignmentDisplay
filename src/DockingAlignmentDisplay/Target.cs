@@ -29,10 +29,10 @@ internal class Target
 
     // Target's orbit
     private PatchedConicsOrbit _targetOrbit;
-    private Vector3d _tgtFwd;
-    private Vector3d _tgtLeft;
 
     // Target's basis
+    private Vector3d _tgtFwd;
+    private Vector3d _tgtLeft;
     private Vector3d _tgtUp;
 
     public Vector3 RelativePosition
@@ -48,13 +48,17 @@ internal class Target
             Vector3 localTargetCenter = _targetFrame.ToLocalPosition(targetCenter);
 
             // Relative position vector
-            var tgtToVessel = localCenter - localTargetCenter;
+            var tgtToVessel = localTargetCenter - localCenter;
 
             // Compute offset
             var offset = Vector3.ProjectOnPlane(tgtToVessel, _tgtUp);
 
+            // Use the active vessel orientation as a reference
+            var localLeft = _targetFrame.ToLocalVector(_activeVessel.ControlTransform.left);
+            var localFwd = _targetFrame.ToLocalVector(_activeVessel.ControlTransform.forward);
+
             // Full relative position vector
-            var relPos = new Vector3(-Vector3.Dot(_tgtFwd, offset), -Vector3.Dot(_tgtLeft, offset),
+            var relPos = -new Vector3(Vector3.Dot(localLeft, offset), Vector3.Dot(localFwd, offset),
                 Vector3.Dot(_tgtUp, tgtToVessel));
 
             return relPos;
@@ -74,14 +78,14 @@ internal class Target
             Vector3 localTargetVel = _targetFrame.ToLocalVector(targetVel);
 
             // Relative position vector
-            var velDiff = localVel - localTargetVel;
+            var velDiff = localTargetVel - localVel;
 
             // Project onto docking port plane
             var velProj = Vector3.ProjectOnPlane(velDiff, _tgtUp);
 
             // Relative velocity
-            var relVel = new Vector3(Vector3.Dot(_tgtFwd, velProj), Vector3.Dot(_tgtLeft, velProj),
-                -Vector3.Dot(_tgtUp, velDiff));
+            var relVel = new Vector3(Vector3.Dot(_tgtLeft, velProj), -Vector3.Dot(_tgtFwd, velProj),
+                Vector3.Dot(_tgtUp, velDiff));
 
             return relVel;
         }
@@ -101,7 +105,7 @@ internal class Target
             var upProj = Vector3.ProjectOnPlane(localUp, _tgtUp);
 
             // Full relative orientation
-            var relOrientation = new Vector3(Vector3.Dot(_tgtFwd, upProj), -Vector3.Dot(_tgtLeft, upProj),
+            var relOrientation = new Vector3(-Vector3.Dot(_tgtLeft, upProj), -Vector3.Dot(_tgtFwd, upProj),
                 Vector3.Dot(_tgtUp, localUp));
 
             return relOrientation;
@@ -120,7 +124,7 @@ internal class Target
 
             // Relative roll in radians ([-PI, PI])
             var relRoll = -Mathf.Sign(Vector3.Dot(localFwd, _tgtLeft.normalized)) *
-                          Mathf.Acos(-Vector3.Dot(localFwd, _tgtFwd.normalized));
+                          Mathf.Acos(Vector3.Dot(localFwd, _tgtFwd.normalized));
 
             return relRoll;
         }
@@ -146,10 +150,10 @@ internal class Target
         if (_currentTarget.IsPart)
             _targetOrbit = _currentTarget.Part.PartOwner.SimulationObject.Orbit as PatchedConicsOrbit;
 
-        // Target frame & up
+        // Target frame & basis
         _targetFrame = _currentTarget.transform.coordinateSystem;
-        _tgtUp = _targetFrame.ToLocalVector(_currentTarget.transform.up);
         _tgtFwd = _targetFrame.ToLocalVector(_currentTarget.transform.forward);
         _tgtLeft = _targetFrame.ToLocalVector(_currentTarget.transform.left);
+        _tgtUp = _targetFrame.ToLocalVector(_currentTarget.transform.up);
     }
 }

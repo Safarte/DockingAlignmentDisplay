@@ -1,21 +1,13 @@
 # Docking Alignement Display
 
-Adds a new instrument providing necessary information to dock with precision.
+Adds a new instrument providing necessary information to dock with precision to KSP2 Redux.
 
 Inspired by the great [Docking Port Alignment Indicator](https://spacedock.info/mod/543/Docking%20Port%20Alignment%20Indicator) mod for KSP1 as well as the Docking MFD from the Orbiter Game.
 
 ## Installation
 
-**It is highly recommended to use CKAN ([Download Here](https://github.com/KSP-CKAN/CKAN)) to install Docking Alignment Display!**
-
-### Manual Installation
-
-1. Download the latest release of [UITK for KSP 2](https://github.com/jan-bures/UitkForKsp2/releases).
-2. Drag the contents of UitkForKsp2's .zip file into your KSP2 directory, commonly located at `C:\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program 2`.
-3. Download the latest release of [SpaceWarp](https://github.com/SpaceWarpDev/SpaceWarp/releases).
-4. Drag the contents of Space Warp's .zip file into your KSP2 directory, commonly located at `C:\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program 2`.
-5. Download the latest release of [Docking Alignment Display](https://github.com/Safarte/DockingAlignmentDisplay/releases).
-6. Drag the contents of the mod's .zip file into your KSP2 directory, commonly located at `C:\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program 2`.
+1. Download the latest release of the mod (`DockingAlignmentDisplay.zip`).
+2. Extract the zip file into a `DockingAlignmentDisplay` folder in `<your KSP2 Redux install>\mods`. The folder structure should look like `<root>\mods\DockingAlignmentDisplay\swinfo.json`.
 
 ## Planned features
 
@@ -23,8 +15,8 @@ Inspired by the great [Docking Port Alignment Indicator](https://spacedock.info/
 - [x] Relative rotation indicator
 - [x] Relative velocity indicator
 - [x] Setting to toggle between linear and log scale for the offset indicator
-- [ ] Docking Mode indicator
 - [ ] Simple selector for nearby docking ports to target
+- [ ] "Align planes" tool
 
 ## Usage
 

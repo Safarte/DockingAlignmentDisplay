@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="UitkForKsp2.MVVM.Bindings" elementFormDefault="qualified" targetNamespace="UitkForKsp2.MVVM.Bindings" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="UnityEngine.UIElements.xsd" namespace="UnityEngine.UIElements" />
+  <xs:complexType name="CommandBindingType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q1="UnityEngine.UIElements" ref="q1:VisualElement" />
+    </xs:choice>
+    <xs:attribute name="property" type="xs:string" />
+    <xs:attribute default="OnSourceChanged" name="update-trigger" xmlns:q2="UnityEngine.UIElements" type="q2:BindingUpdateTriggerType" />
+    <xs:attribute name="data-source-path" type="xs:string" />
+    <xs:attribute name="target-name" type="xs:string" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="CommandBinding" type="tns:CommandBindingType" />
+  <xs:complexType name="EventBindingType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q3="UnityEngine.UIElements" ref="q3:VisualElement" />
+    </xs:choice>
+    <xs:attribute name="property" type="xs:string" />
+    <xs:attribute default="OnSourceChanged" name="update-trigger" xmlns:q4="UnityEngine.UIElements" type="q4:BindingUpdateTriggerType" />
+    <xs:attribute name="data-source-path" type="xs:string" />
+    <xs:attribute default="ClickEvent" name="event-type" type="xs:string" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="EventBinding" type="tns:EventBindingType" />
+</xs:schema>

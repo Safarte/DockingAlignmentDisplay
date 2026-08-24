@@ -1,26 +1,47 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.6.33829.357
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockingAlignmentDisplay", "src\DockingAlignmentDisplay\DockingAlignmentDisplay.csproj", "{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Postprocessing.Editor", "Unity.Postprocessing.Editor.csproj", "{b34628f4-0218-33f1-3805-7ac7278167b5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Postprocessing.Runtime", "Unity.Postprocessing.Runtime.csproj", "{ea428db2-da4d-0cb8-e6c8-e1b3a801c1f8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingAlignmentDisplay", "DockingAlignmentDisplay.csproj", "{f5f20ce3-edf7-d173-7d76-4340128c9514}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redux.Template.Utilities", "Redux.Template.Utilities.csproj", "{ee43ca36-08fa-60b0-073a-f9f8edbb5690}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redux.Template.Editor", "Redux.Template.Editor.csproj", "{a58523fe-4758-7e2c-0b5a-dda00ebbf982}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Postprocessing.Runtime.Tests", "Unity.Postprocessing.Runtime.Tests.csproj", "{760ce216-2631-1b2d-c672-15e7caa7a9fd}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Postprocessing.Editor.Tests", "Unity.Postprocessing.Editor.Tests.csproj", "{19815215-e163-df2f-d221-c90e4f8ecabe}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{51a25521-8d50-8bb8-1281-05b68bb34f48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{a97a1341-8e62-b769-91c9-0e5816169c86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Deploy|Any CPU = Deploy|Any CPU
-		DeployAndRun|Any CPU = DeployAndRun|Any CPU
-		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
-		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
-		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.DeployAndRun|Any CPU.ActiveCfg = DeployAndRun|Any CPU
-		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.DeployAndRun|Any CPU.Build.0 = DeployAndRun|Any CPU
-		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44300DCC-B41E-4F2B-AD1B-9AB76E7C384D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{b34628f4-0218-33f1-3805-7ac7278167b5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{b34628f4-0218-33f1-3805-7ac7278167b5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ea428db2-da4d-0cb8-e6c8-e1b3a801c1f8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ea428db2-da4d-0cb8-e6c8-e1b3a801c1f8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{f5f20ce3-edf7-d173-7d76-4340128c9514}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{f5f20ce3-edf7-d173-7d76-4340128c9514}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ee43ca36-08fa-60b0-073a-f9f8edbb5690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ee43ca36-08fa-60b0-073a-f9f8edbb5690}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{a58523fe-4758-7e2c-0b5a-dda00ebbf982}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{a58523fe-4758-7e2c-0b5a-dda00ebbf982}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{760ce216-2631-1b2d-c672-15e7caa7a9fd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{760ce216-2631-1b2d-c672-15e7caa7a9fd}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19815215-e163-df2f-d221-c90e4f8ecabe}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19815215-e163-df2f-d221-c90e4f8ecabe}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51a25521-8d50-8bb8-1281-05b68bb34f48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51a25521-8d50-8bb8-1281-05b68bb34f48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{a97a1341-8e62-b769-91c9-0e5816169c86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{a97a1341-8e62-b769-91c9-0e5816169c86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

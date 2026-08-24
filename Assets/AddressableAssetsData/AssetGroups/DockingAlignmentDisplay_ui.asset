@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: DockingAlignmentDisplay_ui
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: DockingAlignmentDisplay_ui
+  m_GUID: 9040b5572aef2ba488064bfadbdb214c
+  m_SerializeEntries:
+  - m_GUID: 4e1c76ce2aa2f1148b0f8114942bbf01
+    m_Address: Assets/DockingAlignmentDisplay/Images/icon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8fe8e06ae0e58741a12fdfb1fc2d6ed
+    m_Address: Assets/DockingAlignmentDisplay/UI/DockingAlignmentDisplay.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ced4530b5839c2846903e221a6cbfc71, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 05f1d7e205610b84da79ec9ac2d46f28, type: 2}
+    - {fileID: 11400000, guid: df1f01f5e0eb32e40aa6f41589f2a56d, type: 2}

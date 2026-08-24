@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9065a46703c44e8fabd263388eaeb6e7, type: 3}
+  m_Name: DockingAlignmentDisplay
+  m_EditorClassIdentifier: ksp2community.ksp2unitytools.editor::Ksp2UnityTools.Editor.Modding.Mod
+  id: DockingAlignmentDisplay
+  name: Docking Alignment Display
+  author: Safarte
+  description: Adds a new instrument providing necessary information to dock with
+    precision.
+  version: 0.5.0
+  versionCheck: https://raw.githubusercontent.com/Safarte/DockingAlignmentDisplay/main/Assets/DockingAlignmentDisplay/swinfo.json
+  minKsp2Version: 0.2.8.5
+  maxKsp2Version: '*'
+  source: https://github.com/Safarte/DockingAlignmentDisplay
+  allGroup: {fileID: 11400000, guid: b31976a3ecd00ba4d9c1a10d38b0b758, type: 2}
+  partsGroup: {fileID: 11400000, guid: 0ae032f86ec690740a02cc9bcba54482, type: 2}
+  missionsGroup: {fileID: 11400000, guid: 694820c5f9b5f544e9b735dc6f36b389, type: 2}
+  celestialBodiesGroup: {fileID: 11400000, guid: 3edf289b2e194ac46a76aa914aa43e46, type: 2}
+  scienceExperimentGroup: {fileID: 11400000, guid: b92b2c955dcf40941b9e4886344cd9b5, type: 2}
+  techNodeDataGroup: {fileID: 11400000, guid: 1f1befe70df956246a85a022a0384bc6, type: 2}
+  addressablesProfileId: 3d60dc8471a61f94e9fa5574946e345e
+  dependencies:
+  - id: SpaceWarp2
+    min: 2.0.0
+    max: '*'
+  incompatibilities: []

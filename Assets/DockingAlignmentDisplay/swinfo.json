@@ -1,0 +1,25 @@
+{
+  "spec": "2.0",
+  "mod_id": "DockingAlignmentDisplay",
+  "name": "Docking Alignment Display",
+  "author": "Safarte",
+  "description": "Adds a new instrument providing necessary information to dock with precision.",
+  "source": "https://github.com/Safarte/DockingAlignmentDisplay",
+  "version": "0.5.0",
+  "version_check": "https://raw.githubusercontent.com/Safarte/DockingAlignmentDisplay/main/Assets/DockingAlignmentDisplay/swinfo.json",
+  "ksp2_version": {
+    "min": "0.2.8.5",
+    "max": "*"
+  },
+  "dependencies": [
+    {
+      "id": "SpaceWarp2",
+      "version": {
+        "min": "2.0.0",
+        "max": "*"
+      }
+    }
+  ],
+  "conflicts": [],
+  "main_assembly": "DockingAlignmentDisplay.dll"
+}
